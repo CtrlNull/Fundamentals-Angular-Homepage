@@ -1,0 +1,386 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Ng 3</title>
+    <meta charset="utf-8" />
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="Content/angular-toastr.min.css" rel="stylesheet" />
+</head>
+<body>
+
+    <div data-ng-app="mainApp" class="container">
+        <h2>Angular Example 3</h2>
+        <div ng-controller='exController as exVm' class="row">
+            <div class="well col-md-12">
+                <p>
+                    This example builds upon Example 2 by:
+                </p>
+                <ul>
+                    <li>Creating an Angular service that uses the angular $http service to make AJAX calls.</li>
+                    <li>Adding dependency injection on the controller to use the service.</li>
+                    <li>Modify the controller to use the service and process the returned JavaScript promises.</li>
+                    <li>
+                        Add a module dependency on a 3rd party module (toastr) for nicer alerts, create a
+                        wrapper service around the module, and add the service as a controller dependency.
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <span class="h4">Blogs</span>
+                        <button type="button" class="btn btn-primary btn-xs pull-right " data-ng-click="exVm.add()">Add New Blog</button>
+                    </div>
+                    <div class="panel-body">
+                        <div data-ng-repeat="item in exVm.items">
+                            <a ng-click="exVm.select(item, $index)">{{item.title}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="panel panel-default" ng-show="exVm.item">
+                    <div class="panel-heading">
+                        <span class="h4">Create / Edit Blog</span>
+                    </div>
+                    <div class="panel-body" style="margin-left: 15px; margin-right: 15px;">
+                        <form name="editForm" class="form-horizontal">
+                            <div class="form-group">
+                                <label>Id: </label><span ng-bind="exVm.item.id | uppercase"></span>
+                            </div>
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" class="form-control" ng-model="exVm.item.title" />
+                            </div>
+                            <div class="form-group">
+                                <label>Content</label>
+                                <input type="text" class="form-control" ng-model="exVm.item.content" />
+                            </div>
+
+                            <button type="button" class="btn btn-primary btn-sm" ng-click="exVm.save()">Save</button>
+                            <button type="button" class="btn btn-default btn-sm" ng-click="exVm.cancel()">Cancel</button>
+                            <button type="button" class="btn btn-warning btn-sm" ng-click="exVm.delete()">Delete</button>
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/angular.js"></script>
+    <script src="/Scripts/angular-toastr.min.js"></script>
+    <script src="/Scripts/angular-toastr.tpls.min.js"></script>
+
+    <script>
+
+        // mainApp module registration
+        (function () {
+            angular.module('mainApp', ['toastr']);
+        })();
+
+        // blogService
+        (function () {
+            "use strict";
+            angular.module('mainApp')
+                 .factory('blogService', BlogService);
+
+            BlogService.$inject = ['$http'];
+
+            function BlogService($http) {
+                var sabioAuthKey = 'sabio-internal-00';
+                var svc = {};
+
+                // Public methods - All return a JavaScript promise
+                svc.getAll = _getAll;
+                svc.getById = _getById;
+                svc.post = _post;
+                svc.put = _put;
+                svc.delete = _delete;
+
+                // Begin "private" functions
+
+                function _getAll() {
+                    var settings = {
+                        url: 'http://sabioapi2.azurewebsites.net/api/blogs',
+                        method: 'GET',
+                        headers: { 'SABIO-AUTH': sabioAuthKey },
+                        xhrFields: { withCredentials: true },
+                        cache: false,
+                        responseType: 'json'
+                    };
+                    return $http(settings);
+                }
+
+                function _getById(id) {
+                    var settings = {
+                        url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + id,
+                        method: 'GET',
+                        headers: { 'SABIO-AUTH': sabioAuthKey },
+                        xhrFields: { withCredentials: true },
+                        cache: false,
+                        responseType: 'json'
+                    };
+                    return $http(settings);
+                }
+
+                function _post(blog) {
+                    var settings = {
+                        url: 'http://sabioapi2.azurewebsites.net/api/blogs',
+                        method: 'POST',
+                        headers: { 'SABIO-AUTH': sabioAuthKey },
+                        xhrFields: { withCredentials: true },
+                        cache: false,
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(blog)
+                    };
+                    return $http(settings);
+                }
+
+                function _put(blog) {
+                    var settings = {
+                        url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
+                        method: 'PUT',
+                        headers: { 'SABIO-AUTH': sabioAuthKey },
+                        xhrFields: { withCredentials: true },
+                        cache: false,
+                        responseType: 'json',
+                        contentType: 'application/json; charset=UTF-8',
+                        data: JSON.stringify(blog)
+                    };
+                    return $http(settings);
+                }
+
+                function _delete(id) {
+                    var settings = {
+                        url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
+                        method: 'DELETE',
+                        headers: { 'SABIO-AUTH': sabioAuthKey },
+                        xhrFields: { withCredentials: true },
+                        cache: false,
+                        responseType: 'json'
+                    };
+                    return $http(settings);
+                }
+
+                return svc;
+            }
+
+        })();
+
+        // alertService
+        (function () {
+            "use strict";
+
+            angular.module('mainApp')
+                .factory('alertService', AlertService);
+
+            AlertService.$inject = ['toastr'];
+
+            function AlertService(toastr) {
+                var svc = this;
+
+                svc.toastr = toastr;
+
+                svc.success = _success;
+                svc.info = _info;
+                svc.error = _error;
+                svc.warning = _warning;
+
+                function _success(msg, header) {
+                    svc.toastr.success(msg, header || "Success");
+                }
+
+                function _info(msg, header) {
+                    svc.toastr.info(msg, header || "Info");
+                }
+
+                function _error(msg, header) {
+                    svc.toastr.error(msg, header || "Error");
+                }
+
+                function _warning(msg, header) {
+                    svc.toastr.warning(msg, header || "Warning");
+                }
+
+                return svc;
+            }
+
+        })();
+
+        // exampleController
+        (function () {
+            "use strict";
+            angular.module('mainApp')
+            .controller('exController', ExController);
+
+            // Inject services that our controller depends upon
+            ExController.$inject = ['$scope', 'alertService', 'blogService']
+
+            function ExController($scope, alertService, blogService) {
+                // Administrative stuff
+                var vm = this;
+                vm.blogService = blogService;
+                vm.alertService = alertService;
+
+                // ViewModel
+                vm.items = [];
+                vm.item = null;  // copy of item being edited
+                vm.itemIndex = -1; // index of item being edited
+                vm.select = _select;
+                vm.save = _save;
+                vm.cancel = _cancel;
+                vm.add = _add;
+                vm.delete = _delete;
+
+                // "The fold"
+
+                _render();
+
+                function _render() {
+                    vm.blogService.getAll()
+                        .then(_getAllSuccess, _getAllError);
+                }
+
+                function _getAllSuccess(response) {
+                    if (response && response.data && response.data.items) {
+                        vm.items = response.data.items;
+                    }
+                    vm.alertService.success("Retrieved all");
+                }
+
+                function _getAllError(response) {
+                    if (response && response.data && response.data.message) {
+                        vm.alertService.error(response.data.message, "GetAll failed");
+                    }
+                    else {
+                        vm.alertService.error("Unable to retrieve data", "GetAll failed");
+                    }
+                }
+
+                function _select(item, index) {
+                    // Keep track of the position in vm.items of
+                    // the item we will be editing
+                    vm.itemIndex = index;
+                    // get a fresh copy of the object to be edited from the database.
+                    vm.blogService.getById(item.id)
+                        .then(_getByIdSuccess, _getByIdError)
+                }
+
+                function _getByIdSuccess(response) {
+                    if (response && response.data && response.data.item) {
+                        vm.item = response.data.item;
+                    }
+                    else {
+                        vm.alertService.error("Item has been deleted from the system.")
+                    }
+                }
+
+                function _getByIdError(response) {
+                    if (response && response.data && response.data.message) {
+                        vm.alertService.error(response.data.message, "GetById failed");
+                    }
+                    else {
+                        vm.alertService.error("Unable to retrieve data", "GetById failed");
+                    }
+                }
+
+                // create a new empty item
+                function _add() {
+                    // Changing item from null to empty object indicates any
+                    // ui components for editing should be shown
+                    vm.item = {};
+                    vm.itemIndex = -1;
+                }
+
+                function _cancel() {
+                    _endEdit();
+                }
+
+                function _endEdit() {
+                    vm.item = null;
+                    vm.itemIndex = -1;
+                }
+
+                function _save() {
+                    // The authorId is not in the data returned from the get request, but
+                    // is required in the POST/PUT request, so we are setting it to
+                    // a known valid authorId of 1931.
+                    vm.item.authorId = 1931;
+                    if (vm.item.id) {
+                        vm.blogService.put(vm.item)
+                            .then(_putSuccess, _putError);
+                    }
+                    else {
+                        vm.blogService.post(vm.item)
+                            .then(_postSuccess, _postError);
+                    }
+                }
+
+                function _putSuccess(response) {
+                    // To update UI, replace with new version
+                    vm.items[vm.itemIndex] = vm.item;
+                    _endEdit();
+                    vm.alertService.success("Update successful");
+                }
+
+                function _putError(response) {
+                    if (response && response.data && response.data.message) {
+                        vm.alertService.error(response.data.message, "Update failed");
+                    }
+                    else {
+                        vm.alertService.error("Unable to retrieve data", "Update failed");
+                    }
+                }
+
+                function _postSuccess(response) {
+                    if (response && response.data && response.data.item) {
+                        // To update UI, get id from data
+                        vm.item.id = response.data.item;
+                        vm.items.push(vm.item);
+                        _endEdit();
+                        vm.alertService.success("Insert successful");
+                    }
+                }
+
+                function _postError(jqXHR) {
+                    if (response && response.data && response.data.message) {
+                        vm.alertService.error(response.data.message, "Insert failed");
+                    }
+                    else {
+                        vm.alertService.error("Unable to retrieve data", "Insert failed");
+                    }
+                }
+
+                function _delete() {
+                    if (vm.item.id) {
+                        vm.blogService.delete(vm.item.id)
+                        .then(_deleteSuccess, _deleteError);
+                    }
+                }
+
+                function _deleteSuccess(response) {
+                    // To update UI, replace with new version
+                    vm.items.splice(vm.itemIndex, 1);
+                    _endEdit();
+                    vm.alertService.success("Delete successful");
+                }
+
+                function _deleteError(response) {
+                    if (response && response.data && response.data.message) {
+                        vm.alertService.error(response.data.message, "Delete failed");
+                    }
+                    else {
+                        vm.alertService.error("Unable to delete item", "Delete failed");
+                    }
+                }
+            }
+
+        })();
+
+    </script>
+    }
+
+</body>
+</html>
+
