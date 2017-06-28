@@ -81,6 +81,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />
+    <Content Include="ui-router\3.html" />
+    <Content Include="ui-router\2.html" />
+    <Content Include="ui-router\1.html" />
+    <Content Include="ui-router\_README.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
