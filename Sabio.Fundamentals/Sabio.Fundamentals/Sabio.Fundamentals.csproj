@@ -1,4 +1,5 @@
-﻿<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\build\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.1.3.2\build\Microsoft.Net.Compilers.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -98,10 +99,10 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="Ng01.html" />
-    <Content Include="Ng02.html" />
-    <Content Include="Ng03.html" />
-    <Content Include="Ng04.html" />
+    <Content Include="AngularBasics\Ng01.html" />
+    <Content Include="AngularBasics\Ng02.html" />
+    <Content Include="AngularBasics\Ng03.html" />
+    <Content Include="AngularBasics\Ng04.html" />
     <Content Include="Scripts\angular-mocks.js" />
     <Content Include="Scripts\angular-toastr.js" />
     <Content Include="Scripts\angular-toastr.min.js" />
@@ -112,10 +113,8 @@
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
-    <Content Include="Scripts\app\blog\blog-controller.js" />
-    <Content Include="Scripts\app\blog\blog-service.js" />
-    <Content Include="Scripts\app\dog\dog-service.js" />
-    <Content Include="Scripts\app\dog\dog-controller.js" />
+    <Content Include="Scripts\app\services\blog-service.js" />
+    <Content Include="Scripts\app\services\dog-service.js" />
     <Content Include="Scripts\app\services\alert-service.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />

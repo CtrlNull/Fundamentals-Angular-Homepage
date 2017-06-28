@@ -3,14 +3,14 @@
 <head>
     <title>Ng 3</title>
     <meta charset="utf-8" />
-    <link href="Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="Content/angular-toastr.min.css" rel="stylesheet" />
+    <link href="/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="/Content/angular-toastr.min.css" rel="stylesheet" />
 </head>
 <body>
 
     <div data-ng-app="mainApp" class="container">
         <h2>Angular Example 3</h2>
-        <div ng-controller='exController as exVm' class="row">
+        <div ng-controller='blogController as exVm' class="row">
             <div class="well col-md-12">
                 <p>
                     This example builds upon Example 2 by:
@@ -67,7 +67,7 @@
             </div>
         </div>
     </div>
-    <script src="Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/jquery-3.1.1.js"></script>
     <script src="/Scripts/angular.js"></script>
     <script src="/Scripts/angular-toastr.min.js"></script>
     <script src="/Scripts/angular-toastr.tpls.min.js"></script>
@@ -212,12 +212,12 @@
         (function () {
             "use strict";
             angular.module('mainApp')
-            .controller('exController', ExController);
+            .controller('blogController', BlogController);
 
             // Inject services that our controller depends upon
-            ExController.$inject = ['$scope', 'alertService', 'blogService']
+            BlogController.$inject = ['$scope', 'alertService', 'blogService']
 
-            function ExController($scope, alertService, blogService) {
+            function BlogController($scope, alertService, blogService) {
                 // Administrative stuff
                 var vm = this;
                 vm.blogService = blogService;
