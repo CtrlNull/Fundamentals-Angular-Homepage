@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Angular UI-Router 3</title>
+    </head>
+    <body ng-app='MyApp'>
+        <h3>Be sure to play with the browser's Back and Forward buttons, as well as try changing the URL manually</h3>
+        <div>
+            <a ui-sref='home'>Home</a>
+            <a ui-sref='products'>Products</a>
+        </div>
+
+        <ui-view />
+
+        <script type='text/ng-template' id='/home.html'>
+            <div>
+                This is the home "page".
+                Check out <a ui-sref="products.product({ productId: 123 })">product 123</a>!
+            </div>
+        </script>
+
+        <script type='text/ng-template' id='/products.html'>
+            <div>Products "page" (click <a ui-sref="home">here</a> to go Home).</div>
+            <ul>
+                <li><a ui-sref="products.product({ productId: 123 })">123</a></li>
+                <li><a ui-sref="products.product({ productId: 456 })">456</a></li>
+                <li><a ui-sref="products.product({ productId: 789 })">789</a></li>
+            </ul>
+
+            <ui-view />
+        </script>
+
+        <script type='text/ng-template' id='/product.html'>
+            <div>Here is some info on product ID {{$ctrl.productId}}</div>
+        </script>
+
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.3/angular-ui-router.js"></script>
+
+        <script>
+            var app = angular.module('MyApp', ['ui.router']);
+
+            app.config(['$stateProvider', function ($stateProvider) {
+                $stateProvider
+                    .state({
+                        name: 'home',
+                        component: 'home',
+                        url: '/home'
+                    })
+                    .state({
+                        name: 'products',
+                        component: 'products',
+                        url: '/products'
+                    })
+                    .state({
+                        name: 'products.product',
+                        component: 'product',
+                        url: '/{productId}'
+                    })
+            }]);
+
+            app.component('home', {
+                templateUrl: '/home.html'
+            });
+
+            app.component('products', {
+                templateUrl: '/products.html'
+            });
+
+            app.component('product', {
+                templateUrl: '/product.html',
+                controller: ['$stateParams', function ($stateParams) {
+                    this.productId = $stateParams.productId;
+                }]
+            });
+        </script>
+    </body>
+</html>
