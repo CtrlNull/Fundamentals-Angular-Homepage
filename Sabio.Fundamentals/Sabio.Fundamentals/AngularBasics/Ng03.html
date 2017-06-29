@@ -208,7 +208,6 @@
 
         })();
 
-        // exampleController
         (function () {
             "use strict";
             angular.module('mainApp')
@@ -355,7 +354,7 @@
                 function _delete() {
                     if (vm.item.id) {
                         vm.blogService.delete(vm.item.id)
-                        .then(_deleteSuccess, _deleteError);
+                        .then(_deleteSuccess_deleteError);
                     }
                 }
 

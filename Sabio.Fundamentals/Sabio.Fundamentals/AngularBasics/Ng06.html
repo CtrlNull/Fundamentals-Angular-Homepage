@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Ng 6</title>
+    <meta charset="utf-8" />
+    <link href="/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="/Content/angular-toastr.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div data-ng-app="mainApp" class="container">
+        <h2>Angular Example 6 - UI Router</h2>
+        <div ng-controller='dogController as dogVm' class="row">
+            <div class="well col-md-12">
+                <p>
+                    This example builds upon Example 5 by:
+                </p>
+                <ul>
+                    <li></li>
+                    <li>Angular Filter to format date</li>
+                    <li>Angular orderBy Filter</li>
+                    <li>Custom Angular pagination filter</li>
+                    <li>Using select controls with ngOptions</li>
+                    <li>uib-pagination control</li>
+                </ul>
+            </div>
+            <div class="row">
+                <ul class="nav nav-pills col-md-12">
+                    <li class="active"><a ui-sref="dogs" class="nav-pills">Dogs</a></li>
+                    <li><a ui-sref="blogs">Blogs</a></li>
+                </ul>
+            </div>
+            <ui-view>
+
+            </ui-view>
+        </div>
+    </div>
+    <script src="/Scripts/jquery-3.1.1.js"></script>
+    <script src="/Scripts/angular.js"></script>
+    <script src="/Scripts/angular-toastr.min.js"></script>
+    <script src="/Scripts/angular-toastr.tpls.min.js"></script>
+    <script src="/Scripts/angular-ui-router-1.0.3.js"></script>
+    <script src="/Scripts/angular-ui/ui-bootstrap.min.js"></script>
+    <script src="/Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
+    
+
+    <script>
+
+        (function () {
+            angular.module('mainApp', ['toastr', 'ui.bootstrap', 'ui.router']);
+        })();
+
+    </script>
+
+    <script src="/Scripts/app/filters/paginate.js"></script>
+
+    <script src="/Scripts/app/dog/dog-controller.js"></script>
+    <script src="/Scripts/app/blog/blog-controller.js"></script>
+
+    <script>
+
+        (function (undefined) {
+            angular.module('mainApp')
+                .config(['$stateProvider', MainRouter]);
+
+            MainRouter.$inject = ['$stateProvider'];
+
+            function MainRouter($stateProvider)
+            {
+                var dogState = {
+                    name: 'dogs',
+                    url: '/dogs',
+                    templateUrl: '/Scripts/app/dog/dog-manage.html',
+                    controller: 'dogController',
+                    controllerAs: 'dogVm'
+                };
+
+                var blogState = {
+                    name: 'blogs',
+                    url: '/blogs',
+                    templateUrl: '/Scripts/app/blog/blog-manage.html',
+                    controller: 'blogController',
+                    controllerAs: 'blogVm'
+                };
+
+                $stateProvider.state(dogState);
+                $stateProvider.state(blogState);
+            }
+
+
+        })();
+
+    </script>
+
+    <script src="/Scripts/app/services/dog-service.js"></script>
+    <script src="../Scripts/app/services/blog-service.js"></script>
+    <script src="/Scripts/app/services/alert-service.js"></script>
+
+    <script src="../Scripts/app/dog/dog-controller.js"></script>
+
+</body>
+</html>

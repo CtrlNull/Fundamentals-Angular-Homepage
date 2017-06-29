@@ -81,6 +81,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="AngularBasics\Ng06.html" />
     <Content Include="AngularBasics\Ng05.html" />
     <Content Include="Content\angular-toastr.css" />
     <Content Include="Content\angular-toastr.min.css" />
@@ -121,8 +122,10 @@
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
-    <Content Include="Scripts\AngularUI\ui-router.js" />
-    <Content Include="Scripts\AngularUI\ui-router.min.js" />
+    <Content Include="Scripts\app\blog\blog-controller.js" />
+    <Content Include="Scripts\app\blog\blog-manage.html" />
+    <Content Include="Scripts\app\dog\dog-controller.js" />
+    <Content Include="Scripts\app\dog\dog-manage.html" />
     <Content Include="Scripts\app\filters\paginate.js" />
     <Content Include="Scripts\app\services\blog-service.js" />
     <Content Include="Scripts\app\services\dog-service.js" />
