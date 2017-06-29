@@ -1,1 +1,0 @@
-﻿These examples go with the Wiki article here: https://sabiola.atlassian.net/wiki/display/Front/Angular+UI-Router

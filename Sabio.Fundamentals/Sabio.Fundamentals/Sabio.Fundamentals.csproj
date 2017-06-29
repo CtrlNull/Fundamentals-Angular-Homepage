@@ -115,6 +115,7 @@
     <Content Include="Scripts\angular-ui\ui-bootstrap-tpls.min.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap.js" />
     <Content Include="Scripts\angular-ui\ui-bootstrap.min.js" />
+    <Content Include="Scripts\angular-ui-router-1.0.3.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\angular.min.js.map" />
@@ -142,7 +143,6 @@
     <Content Include="ui-router\3.html" />
     <Content Include="ui-router\2.html" />
     <Content Include="ui-router\1.html" />
-    <Content Include="ui-router\_README.txt" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
