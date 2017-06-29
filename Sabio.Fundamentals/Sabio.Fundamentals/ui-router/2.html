@@ -4,6 +4,8 @@
         <title>Angular UI-Router 2</title>
     </head>
     <body ng-app='MyApp'>
+        <div>Wiki article is <a href="https://sabiola.atlassian.net/wiki/display/Front/Angular+UI-Router">here</a>.</div>
+
         <h3>Be sure to play with the browser's Back and Forward buttons, as well as try changing the URL manually</h3>
         <div>
             <a ui-sref='home'>Home</a>
@@ -12,34 +14,38 @@
 
         <ui-view />
 
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.3/angular-ui-router.js"></script>
+        <script src="/Scripts/jquery-3.1.1.js"></script>
+        <script src="/Scripts/angular.js"></script>
+        <script src="/Scripts/angular-ui-router-1.0.3.js"></script>
 
         <script>
-            var app = angular.module('MyApp', ['ui.router']);
+            (function () {
+                "use strict";
 
-            app.config(['$stateProvider', function ($stateProvider) {
-                $stateProvider
-                    .state({
-                        name: 'home',
-                        component: 'home',
-                        url: '/home'
-                    })
-                    .state({
-                        name: 'products',
-                        component: 'products',
-                        url: '/products'
-                    })
-            }]);
+                var app = angular.module('MyApp', ['ui.router']);
 
-            app.component('home', {
-                template: '<div>This is the home "page".</div>',
-            });
+                app.config(['$stateProvider', function ($stateProvider) {
+                    $stateProvider
+                        .state({
+                            name: 'home',
+                            component: 'home',
+                            url: '/home'
+                        })
+                        .state({
+                            name: 'products',
+                            component: 'products',
+                            url: '/products'
+                        })
+                }]);
 
-            app.component('products', {
-                template: '<div>Products "page" (click <a ui-sref="home">here</a> to go Home)</div>'
-            });
+                app.component('home', {
+                    template: '<div>This is the home "page".</div>',
+                });
+
+                app.component('products', {
+                    template: '<div>Products "page" (click <a ui-sref="home">here</a> to go Home)</div>'
+                });
+            })();
         </script>
     </body>
 </html>

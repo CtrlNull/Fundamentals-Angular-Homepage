@@ -4,12 +4,18 @@
         <title>Angular UI-Router 1</title>
     </head>
     <body ng-app='MyApp'>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.3/angular-ui-router.js"></script>
+        <div>Wiki article is <a href="https://sabiola.atlassian.net/wiki/display/Front/Angular+UI-Router">here</a>.</div>
+
+        <script src="/Scripts/jquery-3.1.1.js"></script>
+        <script src="/Scripts/angular.js"></script>
+        <script src="/Scripts/angular-ui-router-1.0.3.js"></script>
 
         <script>
-            var app = angular.module('MyApp', ['ui.router']);
+            (function () {
+                "use strict";
+
+                var app = angular.module('MyApp', ['ui.router']);
+            })();
         </script>
     </body>
 </html>

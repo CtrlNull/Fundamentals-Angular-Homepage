@@ -108,6 +108,7 @@
     <Content Include="Scripts\angular-toastr.min.js" />
     <Content Include="Scripts\angular-toastr.tpls.js" />
     <Content Include="Scripts\angular-toastr.tpls.min.js" />
+    <Content Include="Scripts\angular-ui-router-1.0.3.js" />
     <Content Include="Scripts\angular.js" />
     <Content Include="Scripts\angular.min.js" />
     <Content Include="Scripts\angular.min.js.map" />
