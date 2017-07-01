@@ -81,8 +81,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="AngularBasics\Ng06.html" />
-    <Content Include="AngularBasics\Ng05.html" />
+    <Content Include="Angular\Ng06.html" />
+    <Content Include="Angular\Ng05.html" />
     <Content Include="Content\angular-toastr.css" />
     <Content Include="Content\angular-toastr.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
@@ -101,10 +101,10 @@
     <Content Include="Content\bootstrap.css.map" />
     <Content Include="Content\bootstrap-theme.min.css.map" />
     <Content Include="Content\bootstrap-theme.css.map" />
-    <Content Include="AngularBasics\Ng01.html" />
-    <Content Include="AngularBasics\Ng02.html" />
-    <Content Include="AngularBasics\Ng03.html" />
-    <Content Include="AngularBasics\Ng04.html" />
+    <Content Include="Angular\Ng01.html" />
+    <Content Include="Angular\Ng02.html" />
+    <Content Include="Angular\Ng03.html" />
+    <Content Include="Angular\Ng04.html" />
     <Content Include="Scripts\angular-animate.js" />
     <Content Include="Scripts\angular-animate.min.js" />
     <Content Include="Scripts\angular-mocks.js" />
@@ -122,6 +122,7 @@
     <Content Include="Scripts\angular.min.js.map" />
     <Content Include="Content\toastr.scss" />
     <Content Include="Content\toastr.less" />
+    <Content Include="Scripts\app\appGlobal.js" />
     <Content Include="Scripts\app\blog\blog-controller.js" />
     <Content Include="Scripts\app\blog\blog-manage.html" />
     <Content Include="Scripts\app\dog\dog-controller.js" />
@@ -153,6 +154,15 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\Responses\BaseResponse.cs" />
+    <Compile Include="Models\Responses\ErrorResponse.cs" />
+    <Compile Include="Models\Responses\ItemResponse.cs" />
+    <Compile Include="Models\Responses\ItemsResponse.cs" />
+    <Compile Include="Models\Responses\LoginSuccessful.cs" />
+    <Compile Include="Models\Responses\PagedItemsResponse.cs" />
+    <Compile Include="Models\Responses\SuccessResponse.cs" />
+    <Compile Include="Models\ViewModels\BaseViewModel.cs" />
+    <Compile Include="Models\ViewModels\ItemViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -169,7 +179,12 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Controllers\" />
-    <Folder Include="Models\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Sabio.Data\Sabio.Data.csproj">
+      <Project>{f696cb27-02f4-4326-a80d-99b070a888ce}</Project>
+      <Name>Sabio.Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

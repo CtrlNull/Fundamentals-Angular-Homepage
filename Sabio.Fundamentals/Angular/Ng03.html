@@ -69,14 +69,14 @@
     </div>
     <script src="/Scripts/jquery-3.1.1.js"></script>
     <script src="/Scripts/angular.js"></script>
-    <script src="/Scripts/angular-toastr.min.js"></script>
+    <script src="/Scripts/angular-animate.js"></script>
     <script src="/Scripts/angular-toastr.tpls.min.js"></script>
 
     <script>
 
         // mainApp module registration
         (function () {
-            angular.module('mainApp', ['toastr']);
+            angular.module('mainApp', ['ngAnimate', 'toastr']);
         })();
 
         // blogService
@@ -85,20 +85,17 @@
             angular.module('mainApp')
                  .factory('blogService', BlogService);
 
-            BlogService.$inject = ['$http'];
+            BlogService.$inject = ['$http', '$q'];
 
-            function BlogService($http) {
+            function BlogService($http, $q) {
                 var sabioAuthKey = 'sabio-internal-00';
-                var svc = {};
-
-                // Public methods - All return a JavaScript promise
-                svc.getAll = _getAll;
-                svc.getById = _getById;
-                svc.post = _post;
-                svc.put = _put;
-                svc.delete = _delete;
-
-                // Begin "private" functions
+                return {
+                    getAll: _getAll,
+                    getById: _getById,
+                    post: _post,
+                    put: _put,
+                    delete: _delete
+                };
 
                 function _getAll() {
                     var settings = {
@@ -109,7 +106,22 @@
                         cache: false,
                         responseType: 'json'
                     };
-                    return $http(settings);
+                    return $http(settings)
+                        .then(_getAllComplete, _getAllFailed);
+                }
+
+                function _getAllComplete(response) {
+                    // unwrap the data from the response
+                    return response.data;
+                }
+
+                function _getAllFailed(error) {
+                    var msg = 'Failed to retrieve blogs';
+                    if (error.data && error.data.description) {
+                        msg += '\n' + error.data.description;
+                    }
+                    error.data.description = msg;
+                    return $q.reject(error);
                 }
 
                 function _getById(id) {
@@ -121,7 +133,22 @@
                         cache: false,
                         responseType: 'json'
                     };
-                    return $http(settings);
+                    return $http(settings)
+                        .then(_getByIdComplete, _getByIdFailed);
+                }
+
+                function _getByIdComplete(response) {
+                    // unwrap the data from the response
+                    return response.data;
+                }
+
+                function _getByIdFailed(error) {
+                    var msg = 'Failed to retrieve blog';
+                    if (error.data && error.data.description) {
+                        msg += '\n' + error.data.description;
+                    }
+                    error.data.description = msg;
+                    return $q.reject(error);
                 }
 
                 function _post(blog) {
@@ -134,7 +161,22 @@
                         contentType: 'application/json; charset=UTF-8',
                         data: JSON.stringify(blog)
                     };
-                    return $http(settings);
+                    return $http(settings)
+                        .then(_postComplete, _postFailed);
+                }
+
+                function _postComplete(response) {
+                    // unwrap the data from the response
+                    return response.data;
+                }
+
+                function _postFailed(error) {
+                    var msg = 'Failed to insert blog';
+                    if (error.data && error.data.description) {
+                        msg += '\n' + error.data.description;
+                    }
+                    error.data.description = msg;
+                    return $q.reject(error);
                 }
 
                 function _put(blog) {
@@ -148,7 +190,22 @@
                         contentType: 'application/json; charset=UTF-8',
                         data: JSON.stringify(blog)
                     };
-                    return $http(settings);
+                    return $http(settings)
+                        .then(_putComplete, _putFailed);
+                }
+
+                function _putComplete(response) {
+                    // unwrap the data from the response
+                    return response.data;
+                }
+
+                function _putFailed(error) {
+                    var msg = 'Failed to update blog';
+                    if (error.data && error.data.description) {
+                        msg += '\n' + error.data.description;
+                    }
+                    error.data.description = msg;
+                    return $q.reject(error);
                 }
 
                 function _delete(id) {
@@ -160,50 +217,24 @@
                         cache: false,
                         responseType: 'json'
                     };
-                    return $http(settings);
+                    return $http(settings)
+                        .then(_deleteComplete, _deleteFailed);
                 }
 
-                return svc;
-            }
-
-        })();
-
-        // alertService
-        (function () {
-            "use strict";
-
-            angular.module('mainApp')
-                .factory('alertService', AlertService);
-
-            AlertService.$inject = ['toastr'];
-
-            function AlertService(toastr) {
-                var svc = this;
-
-                svc.toastr = toastr;
-
-                svc.success = _success;
-                svc.info = _info;
-                svc.error = _error;
-                svc.warning = _warning;
-
-                function _success(msg, header) {
-                    svc.toastr.success(msg, header || "Success");
+                function _deleteComplete(response) {
+                    // unwrap the data from the response
+                    return response.data;
                 }
 
-                function _info(msg, header) {
-                    svc.toastr.info(msg, header || "Info");
+                function _deleteFailed(error) {
+                    var msg = 'Failed to delete blog';
+                    if (error.data && error.data.description) {
+                        msg += '\n' + error.data.description;
+                    }
+                    error.data.description = msg;
+                    return $q.reject(error);
                 }
 
-                function _error(msg, header) {
-                    svc.toastr.error(msg, header || "Error");
-                }
-
-                function _warning(msg, header) {
-                    svc.toastr.warning(msg, header || "Warning");
-                }
-
-                return svc;
             }
 
         })();
@@ -214,13 +245,13 @@
             .controller('blogController', BlogController);
 
             // Inject services that our controller depends upon
-            BlogController.$inject = ['$scope', 'alertService', 'blogService']
+            BlogController.$inject = ['toastr', 'blogService']
 
-            function BlogController($scope, alertService, blogService) {
+            function BlogController(toastr, blogService) {
                 // Administrative stuff
                 var vm = this;
                 vm.blogService = blogService;
-                vm.alertService = alertService;
+                vm.alertService = toastr;
 
                 // ViewModel
                 vm.items = [];
@@ -234,23 +265,23 @@
 
                 // "The fold"
 
-                _render();
+                vm.$onInit = _init;
 
-                function _render() {
+                function _init() {
                     vm.blogService.getAll()
                         .then(_getAllSuccess, _getAllError);
                 }
 
-                function _getAllSuccess(response) {
-                    if (response && response.data && response.data.items) {
-                        vm.items = response.data.items;
+                function _getAllSuccess(data) {
+                    if (data && data.items) {
+                        vm.items = data.items;
                     }
                     vm.alertService.success("Retrieved all");
                 }
 
-                function _getAllError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "GetAll failed");
+                function _getAllError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "GetAll failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "GetAll failed");
@@ -266,18 +297,18 @@
                         .then(_getByIdSuccess, _getByIdError)
                 }
 
-                function _getByIdSuccess(response) {
-                    if (response && response.data && response.data.item) {
-                        vm.item = response.data.item;
+                function _getByIdSuccess(data) {
+                    if (data && data.item) {
+                        vm.item = data.item;
                     }
                     else {
                         vm.alertService.error("Item has been deleted from the system.")
                     }
                 }
 
-                function _getByIdError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "GetById failed");
+                function _getByIdError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "GetById failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "GetById failed");
@@ -316,35 +347,35 @@
                     }
                 }
 
-                function _putSuccess(response) {
-                    // To update UI, replace with new version
+                function _putSuccess(data) {
+                    // To update UI, replace with new version, put doesn't return anything
                     vm.items[vm.itemIndex] = vm.item;
                     _endEdit();
                     vm.alertService.success("Update successful");
                 }
 
-                function _putError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Update failed");
+                function _putError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "Update failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "Update failed");
                     }
                 }
 
-                function _postSuccess(response) {
-                    if (response && response.data && response.data.item) {
+                function _postSuccess(data) {
+                    if (data && data.item) {
                         // To update UI, get id from data
-                        vm.item.id = response.data.item;
+                        vm.item.id = data.item;
                         vm.items.push(vm.item);
                         _endEdit();
                         vm.alertService.success("Insert successful");
                     }
                 }
 
-                function _postError(jqXHR) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Insert failed");
+                function _postError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "Insert failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "Insert failed");
@@ -354,20 +385,20 @@
                 function _delete() {
                     if (vm.item.id) {
                         vm.blogService.delete(vm.item.id)
-                        .then(_deleteSuccess_deleteError);
+                            .then(_deleteSuccess_deleteError);
                     }
                 }
 
-                function _deleteSuccess(response) {
+                function _deleteSuccess(data) {
                     // To update UI, replace with new version
                     vm.items.splice(vm.itemIndex, 1);
                     _endEdit();
                     vm.alertService.success("Delete successful");
                 }
 
-                function _deleteError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Delete failed");
+                function _deleteError(error) {
+                    if (error &&  error.message) {
+                        vm.alertService.error(error.message, "Delete failed");
                     }
                     else {
                         vm.alertService.error("Unable to delete item", "Delete failed");
