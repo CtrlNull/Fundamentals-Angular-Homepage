@@ -1,7 +1,7 @@
 ﻿(function () {
     "use strict";
 
-    angular.module('mainApp')
+    angular.module(APPNAME)
         .factory('alertService', AlertService);
 
     AlertService.$inject = ['toastr'];

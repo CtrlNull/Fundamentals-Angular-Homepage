@@ -33,41 +33,42 @@
                         <form class="form-inline">
 
                             <div class="form-group">
-                                <label>Find:&nbsp;</label>
-                                <input type="text" ng-model="dogVm.searchText" />
+                                <label>Find</label>
+                                <input type="text" class="form-control input-sm" placeholder="name/breed"
+                                       ng-model="dogVm.searchText" ng-change="dogVm.searchTextChange()" />
                             </div>
 
 
                             <div class="form-group">
-                                <label>Sort By:&nbsp;</label>
+                                <label for="sortBy">Sort By</label>
 
-                                <select class="form-control" ng-model="dogVm.orderBy">
-                                    <option value="name">Name</option>
-                                    <option value="breed">Breed</option>
-                                    <option value="birthDate">Birthdate</option>
-                                </select>
-                                <select class="form-control" ng-model="dogVm.reverse">
-                                    <option value="" selected>Ascending</option>
-                                    <option value="true">Descending</option>
-                                </select>
+                                <div class="input-group input-group-sm">
+                                    <select class="input-sm mr-20" ng-model="dogVm.orderBy" placeholder="sort by">
+                                        <option value="name">Name</option>
+                                        <option value="breed">Breed</option>
+                                        <option value="birthDate">Birthdate</option>
+                                    </select>
+
+                                    <label class="form-check-label" style="padding: 8px;">
+                                        <input type="checkbox" class="form-check-input" ng-model="dogVm.reverse" style="margin: 4px">Rev
+                                    </label>
+                                </div>
                             </div>
 
-                    
                         </form>
-                      <div class="row"></div>
                         <hr />
-                        <div data-ng-repeat="item in dogVm.items | filter: dogVm.searchText | orderBy: dogVm.orderBy : dogVm.reverse | paginate: dogVm.currentPage : dogVm.itemsPerPage">
+                        <div data-ng-repeat="item in dogVm.filteredItems | orderBy: dogVm.orderBy : dogVm.reverse | paginate: dogVm.currentPage : dogVm.itemsPerPage ">
                             <a ng-click="dogVm.select(item, $index)">
                                 {{item.name + ' - (' + item.breed + ') - ' + item.birthDate | date }}
                             </a>
                         </div>
-                        <hr/>
+                        <hr />
 
-                            <ul class="col-md-8" style="margin: 0" uib-pagination ng-model="dogVm.currentPage"
-                                total-items="dogVm.items.length" boundary-link="true"
-                                items-per-page="dogVm.itemsPerPage"
-                                max-size="8"></ul>
-                        <div class="col-md-4" >
+                        <ul class="col-md-8" style="margin: 0" uib-pagination ng-model="dogVm.currentPage"
+                            total-items="dogVm.filteredItems.length" boundary-link="true"
+                            items-per-page="dogVm.itemsPerPage"
+                            max-size="8"></ul>
+                        <div class="col-md-4">
                             <select style="margin-top: 6px;" ng-model="dogVm.itemsPerPage"
                                     ng-options="count as count + ' / page' for count in dogVm.itemsPerPageOptions"></select>
                         </div>
@@ -197,14 +198,18 @@
     <script src="/Scripts/angular.js"></script>
     <script src="/Scripts/angular-toastr.min.js"></script>
     <script src="/Scripts/angular-toastr.tpls.min.js"></script>
-    <script src="/Scripts/AngularUI/ui-router.min.js"></script>
     <script src="/Scripts/angular-ui/ui-bootstrap.min.js"></script>
     <script src="/Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
 
     <script>
+        // Establish Module Name
+        var APPNAME = 'mainApp';
+    </script>
+
+    <script>
 
         (function () {
-            angular.module('mainApp', ['toastr', 'ui.bootstrap']);
+            angular.module(APPNAME, ['toastr', 'ui.bootstrap']);
         })();
 
     </script>
@@ -226,9 +231,12 @@
                 var vm = this;
                 vm.dogService = dogService;
                 vm.alertService = alertService;
+                vm.$scope = $scope;
 
                 // ViewModel
-                vm.items = [];
+                vm.items = []; // all items from the AJAX call
+                vm.filteredItems = []; // list of items that meet filter criterion
+
                 // Angular will automatically set this to reference the form if the form
                 // has a matching name attribute
                 vm.editForm = null;
@@ -244,28 +252,48 @@
                 vm.itemsPerPage = 8;
                 vm.totalItems = 1000;
                 vm.itemsPerPageOptions = [4, 8, 12, 16];
+                vm.searchText = '';
                 vm.orderBy = 'name';
                 vm.reverse = '';
+                //vm.$scope.$watch(vm.searchText, _filter);
+
+                vm.searchTextChange = _filter;
 
                 // "The fold"
 
-                _render();
+                vm.$onInit = _init;
 
-                function _render() {
+                // "The fold"
+
+                function _init() {
                     vm.dogService.getAll()
                         .then(_getAllSuccess, _getAllError);
                 }
 
-                function _getAllSuccess(response) {
-                    if (response && response.data && response.data.items) {
-                        vm.items = response.data.items;
+                function _filter() {
+                    vm.filteredItems = vm.items.filter(_dogFilter);
+                }
+
+                function _getAllSuccess(data) {
+                    if (data && data.items) {
+                        vm.items = data.items;
+                        _filter();
                     }
                     vm.alertService.success("Retrieved all");
                 }
 
-                function _getAllError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "GetAll failed");
+                function _dogFilter(dog) {
+                    if (!vm.searchText) {
+                        return true;
+                    }
+                    var searchString = vm.searchText.toUpperCase();
+                    return (dog.name.toUpperCase().indexOf(searchString) > -1)
+                            || (dog.breed.toUpperCase().indexOf(searchString) > -1);
+                }
+
+                function _getAllError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "GetAll failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "GetAll failed");
@@ -282,18 +310,18 @@
                     vm.editForm.$setPristine();
                 }
 
-                function _getByIdSuccess(response) {
-                    if (response && response.data && response.data.item) {
-                        vm.item = response.data.item;
+                function _getByIdSuccess(data) {
+                    if (data && data.item) {
+                        vm.item = data.item;
                     }
                     else {
                         vm.alertService.error("Item has been deleted from the system.")
                     }
                 }
 
-                function _getByIdError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "GetById failed");
+                function _getByIdError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "GetById failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "GetById failed");
@@ -321,7 +349,6 @@
 
                 function _save(isValid) {
                     if (vm.editForm.$invalid) {
-                        //vm.editForm.$setDirty();  // set form as dirty, to make validation messages visible.
                         vm.alertService.warning('Some information is not entered correctly, please review the validation messages and try again.',
                             'Save Failed');
                         return;
@@ -336,35 +363,35 @@
                     }
                 }
 
-                function _putSuccess(response) {
+                function _putSuccess(data) {
                     // To update UI, replace with new version
                     vm.items[vm.itemIndex] = vm.item;
                     _endEdit();
                     vm.alertService.success("Update successful");
                 }
 
-                function _putError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Update failed");
+                function _putError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "Update failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "Update failed");
                     }
                 }
 
-                function _postSuccess(response) {
-                    if (response && response.data && response.data.item) {
+                function _postSuccess(data) {
+                    if (data && data.item) {
                         // To update UI, get id from data
-                        vm.item.id = response.data.item;
+                        vm.item.id = data.item;
                         vm.items.push(vm.item);
                         _endEdit();
                         vm.alertService.success("Insert successful");
                     }
                 }
 
-                function _postError(jqXHR) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Insert failed");
+                function _postError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "Insert failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "Insert failed");
@@ -378,16 +405,16 @@
                     }
                 }
 
-                function _deleteSuccess(response) {
+                function _deleteSuccess(data) {
                     // To update UI, replace with new version
                     vm.items.splice(vm.itemIndex, 1);
                     _endEdit();
                     vm.alertService.success("Delete successful");
                 }
 
-                function _deleteError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Delete failed");
+                function _deleteError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "Delete failed");
                     }
                     else {
                         vm.alertService.error("Unable to delete item", "Delete failed");

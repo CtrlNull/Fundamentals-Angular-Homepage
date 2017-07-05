@@ -1,6 +1,6 @@
 ﻿(function () {
     "use strict";
-    angular.module('mainApp')
+    angular.module(APPNAME)
     .controller('blogController', BlogController);
 
     // Inject services that our controller depends upon

@@ -8,7 +8,7 @@
 </head>
 <body>
     <div data-ng-app="mainApp" class="container">
-        <h2>Angular Example 4</h2>
+        <h2>Angular Example 4: Forms</h2>
         <div ng-controller='dogController as dogVm' class="row">
             <div class="well col-md-12">
                 <p>
@@ -51,6 +51,8 @@
                                 <div ng-show="dogVm.editForm.$submitted || dogVm.editForm.name.$dirty">
                                     <span ng-show="dogVm.editForm.name.$error.required"
                                           class="help-block">Name is required</span>
+                                    <span ng-show="dogVm.editForm.name.$error.maxlength"
+                                          class="help-block">Name can be no more than 50 characters</span>
                                 </div>
                             </div>
                             <div class="form-group"
@@ -134,8 +136,7 @@
                                 Save
                             </button>
                             <button type="button" class="btn btn-default btn-sm"
-                                    ng-click="dogVm.cancel()"
-                                    ng-enabled="dogVm.editForm.$dirty">
+                                    ng-click="dogVm.cancel()">
                                 Cancel
                             </button>
                             <button type="button" class="btn btn-warning btn-sm"
@@ -152,13 +153,17 @@
     </div>
     <script src="/Scripts/jquery-3.1.1.js"></script>
     <script src="/Scripts/angular.js"></script>
-    <!--<script src="/Scripts/angular-toastr.min.js"></script>-->
     <script src="/Scripts/angular-toastr.tpls.min.js"></script>
+
+    <script>
+        // Establish Module Name
+        var APPNAME = 'mainApp';
+    </script>
 
     <script>
 
         (function () {
-            angular.module('mainApp', ['toastr']);
+            angular.module(APPNAME, ['toastr']);
         })();
 
     </script>
@@ -166,10 +171,10 @@
     <script src="/Scripts/app/services/dog-service.js"></script>
     <script src="/Scripts/app/services/alert-service.js"></script>
 
-    <script >
+    <script>
         (function () {
             "use strict";
-            angular.module('mainApp')
+            angular.module(APPNAME)
             .controller('dogController', DogController);
 
             // Inject services that our controller depends upon
@@ -193,26 +198,25 @@
                 vm.cancel = _cancel;
                 vm.add = _add;
                 vm.delete = _delete;
+                vm.$onInit = _init;
 
                 // "The fold"
 
-                _render();
-
-                function _render() {
+                function _init() {
                     vm.dogService.getAll()
                         .then(_getAllSuccess, _getAllError);
                 }
 
-                function _getAllSuccess(response) {
-                    if (response && response.data && response.data.items) {
-                        vm.items = response.data.items;
+                function _getAllSuccess(data) {
+                    if (data && data.items) {
+                        vm.items = data.items;
                     }
                     vm.alertService.success("Retrieved all");
                 }
 
-                function _getAllError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "GetAll failed");
+                function _getAllError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "GetAll failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "GetAll failed");
@@ -229,18 +233,18 @@
                     vm.editForm.$setPristine();
                 }
 
-                function _getByIdSuccess(response) {
-                    if (response && response.data && response.data.item) {
-                        vm.item = response.data.item;
+                function _getByIdSuccess(data) {
+                    if (data && data.item) {
+                        vm.item = data.item;
                     }
                     else {
                         vm.alertService.error("Item has been deleted from the system.")
                     }
                 }
 
-                function _getByIdError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "GetById failed");
+                function _getByIdError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "GetById failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "GetById failed");
@@ -268,7 +272,6 @@
 
                 function _save(isValid) {
                     if (vm.editForm.$invalid) {
-                        //vm.editForm.$setDirty();  // set form as dirty, to make validation messages visible.
                         vm.alertService.warning('Some information is not entered correctly, please review the validation messages and try again.',
                             'Save Failed');
                         return;
@@ -283,35 +286,35 @@
                     }
                 }
 
-                function _putSuccess(response) {
+                function _putSuccess(data) {
                     // To update UI, replace with new version
                     vm.items[vm.itemIndex] = vm.item;
                     _endEdit();
                     vm.alertService.success("Update successful");
                 }
 
-                function _putError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Update failed");
+                function _putError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "Update failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "Update failed");
                     }
                 }
 
-                function _postSuccess(response) {
-                    if (response && response.data && response.data.item) {
+                function _postSuccess(data) {
+                    if (data && data.item) {
                         // To update UI, get id from data
-                        vm.item.id = response.data.item;
+                        vm.item.id = data.item;
                         vm.items.push(vm.item);
                         _endEdit();
                         vm.alertService.success("Insert successful");
                     }
                 }
 
-                function _postError(jqXHR) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Insert failed");
+                function _postError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "Insert failed");
                     }
                     else {
                         vm.alertService.error("Unable to retrieve data", "Insert failed");
@@ -325,16 +328,16 @@
                     }
                 }
 
-                function _deleteSuccess(response) {
+                function _deleteSuccess(data) {
                     // To update UI, replace with new version
                     vm.items.splice(vm.itemIndex, 1);
                     _endEdit();
                     vm.alertService.success("Delete successful");
                 }
 
-                function _deleteError(response) {
-                    if (response && response.data && response.data.message) {
-                        vm.alertService.error(response.data.message, "Delete failed");
+                function _deleteError(error) {
+                    if (error && error.message) {
+                        vm.alertService.error(error.message, "Delete failed");
                     }
                     else {
                         vm.alertService.error("Unable to delete item", "Delete failed");
@@ -343,6 +346,8 @@
             }
 
         })();
+
+
     </script>
 
 

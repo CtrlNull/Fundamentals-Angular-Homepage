@@ -1,87 +1,153 @@
 ﻿(function () {
     "use strict";
-    angular.module('mainApp')
-         .factory('blogService', BlogService);
+    angular.module(APPNAME)
+         .factory('blogService', blogService);
 
-    BlogService.$inject = ['$http'];
+    blogService.$inject = ['$http', '$q'];
 
-    function BlogService($http) {
+    function blogService($http, $q) {
         var sabioAuthKey = 'sabio-internal-00';
-        var svc = {};
-
-        // Public methods - All return a JavaScript promise
-        svc.getAll = _getAll;
-        svc.getById = _getById;
-        svc.post = _post;
-        svc.put = _put;
-        svc.delete = _delete;
-
-        // Begin "private" functions
+        return {
+            getAll: _getAll,
+            getById: _getById,
+            post: _post,
+            put: _put,
+            delete: _delete
+        };
 
         function _getAll() {
             var settings = {
-                url: 'https://sabioapi2.azurewebsites.net/api/blogs',
+                url: 'http://sabioapi2.azurewebsites.net/api/blogs',
                 method: 'GET',
                 headers: { 'SABIO-AUTH': sabioAuthKey },
-                xhrFields: { withCredentials: true },
                 cache: false,
                 responseType: 'json'
             };
-            return $http(settings);
+            return $http(settings)
+                .then(_getAllComplete, _getAllFailed);
+        }
+
+        function _getAllComplete(response) {
+            // unwrap the data from the response
+            return response.data;
+        }
+
+        function _getAllFailed(error) {
+            var msg = 'Failed to retrieve blogs';
+            if (error.data && error.data.description) {
+                msg += '\n' + error.data.description;
+            }
+            error.data.description = msg;
+            return $q.reject(error);
         }
 
         function _getById(id) {
             var settings = {
-                url: 'https://sabioapi2.azurewebsites.net/api/blogs/' + id,
+                url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + id,
                 method: 'GET',
                 headers: { 'SABIO-AUTH': sabioAuthKey },
-                xhrFields: { withCredentials: true },
                 cache: false,
                 responseType: 'json'
             };
-            return $http(settings);
+            return $http(settings)
+                .then(_getByIdComplete, _getByIdFailed);
+        }
+
+        function _getByIdComplete(response) {
+            // unwrap the data from the response
+            return response.data;
+        }
+
+        function _getByIdFailed(error) {
+            var msg = 'Failed to retrieve blog';
+            if (error.data && error.data.description) {
+                msg += '\n' + error.data.description;
+            }
+            error.data.description = msg;
+            return $q.reject(error);
         }
 
         function _post(blog) {
             var settings = {
-                url: 'https://sabioapi2.azurewebsites.net/api/blogs',
+                url: 'http://sabioapi2.azurewebsites.net/api/blogs',
                 method: 'POST',
                 headers: { 'SABIO-AUTH': sabioAuthKey },
-                xhrFields: { withCredentials: true },
                 cache: false,
                 contentType: 'application/json; charset=UTF-8',
                 data: JSON.stringify(blog)
             };
-            return $http(settings);
+            return $http(settings)
+                .then(_postComplete, _postFailed);
+        }
+
+        function _postComplete(response) {
+            // unwrap the data from the response
+            return response.data;
+        }
+
+        function _postFailed(error) {
+            var msg = 'Failed to insert blog';
+            if (error.data && error.data.description) {
+                msg += '\n' + error.data.description;
+            }
+            error.data.description = msg;
+            return $q.reject(error);
         }
 
         function _put(blog) {
             var settings = {
-                url: 'https://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
+                url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
                 method: 'PUT',
                 headers: { 'SABIO-AUTH': sabioAuthKey },
-                xhrFields: { withCredentials: true },
                 cache: false,
                 responseType: 'json',
                 contentType: 'application/json; charset=UTF-8',
                 data: JSON.stringify(blog)
             };
-            return $http(settings);
+            return $http(settings)
+                .then(_putComplete, _putFailed);
+        }
+
+        function _putComplete(response) {
+            // unwrap the data from the response
+            return response.data;
+        }
+
+        function _putFailed(error) {
+            var msg = 'Failed to update blog';
+            if (error.data && error.data.description) {
+                msg += '\n' + error.data.description;
+            }
+            error.data.description = msg;
+            return $q.reject(error);
         }
 
         function _delete(id) {
             var settings = {
-                url: 'https://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
+                url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + id,
                 method: 'DELETE',
                 headers: { 'SABIO-AUTH': sabioAuthKey },
-                xhrFields: { withCredentials: true },
                 cache: false,
                 responseType: 'json'
             };
-            return $http(settings);
+            return $http(settings)
+                .then(_deleteComplete, _deleteFailed);
         }
 
-        return svc;
+        function _deleteComplete(response) {
+            // unwrap the data from the response
+            return response.data;
+        }
+
+        function _deleteFailed(error) {
+            var msg = 'Failed to delete blog';
+            if (error.data && error.data.description) {
+                msg += '\n' + error.data.description;
+            }
+            error.data.description = msg;
+            return $q.reject(error);
+        }
+
     }
 
 })();
