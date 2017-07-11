@@ -39,13 +39,14 @@ namespace Sabio.Data
 
         #region - IDataProvider Memebers -
 
-        public void ExecuteCmd(Func<SqlConnection> dataSouce, string storedProc,
+        public void ExecuteCmd(Func<SqlConnection> connectionStringSource, 
+            string storedProc,
             Action<SqlParameterCollection> inputParamMapper,
-            Action<IDataReader, short> map,
+            Action<IDataReader, short> singleRecordMapper,
             Action<SqlParameterCollection> returnParameters = null,
             Action<SqlCommand> cmdModifier = null)
         {
-            if (map == null)
+            if (singleRecordMapper == null)
                 throw new NullReferenceException("ObjectMapper is required.");
 
             SqlDataReader reader = null;
@@ -55,7 +56,7 @@ namespace Sabio.Data
             try
             {
 
-                using (conn = dataSouce())
+                using (conn = connectionStringSource())
                 {
                     if (conn != null)
                     {
@@ -76,8 +77,8 @@ namespace Sabio.Data
 
                                 while (reader.Read())
                                 {
-                                    if (map != null)
-                                        map(reader, result);
+                                    if (singleRecordMapper != null)
+                                        singleRecordMapper(reader, result);
                                 }
 
                                 result += 1;
