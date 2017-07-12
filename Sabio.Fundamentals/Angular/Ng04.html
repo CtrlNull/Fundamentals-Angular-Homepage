@@ -168,9 +168,9 @@
             .controller('dogController', DogController);
 
             // Inject services that our controller depends upon
-            DogController.$inject = ['$scope', 'alertService', 'dogService']
+            DogController.$inject = ['alertService', 'dogService']
 
-            function DogController($scope, alertService, dogService) {
+            function DogController(alertService, dogService) {
                 // Administrative stuff
                 var vm = this;
                 vm.dogService = dogService;

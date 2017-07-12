@@ -60,7 +60,7 @@
                         <div class="clearfix"></div>
                         <hr />
                         <div data-ng-repeat="item in dogVm.filteredItems | orderBy: dogVm.orderBy : dogVm.reverse | paginate: dogVm.currentPage : dogVm.itemsPerPage ">
-                            <a ng-click="dogVm.select(item, $index)">
+                            <a ng-click="dogVm.select(item)">
                                 {{item.name + ' - (' + item.breed + ') - ' + item.birthDate | date }}
                             </a>
                         </div>
@@ -234,7 +234,6 @@
                 // has a matching name attribute
                 vm.editForm = null;
                 vm.item = null;  // copy of item being edited
-                vm.itemIndex = -1; // index of item being edited
                 vm.select = _select;
                 vm.save = _save;
                 vm.cancel = _cancel;
@@ -292,10 +291,7 @@
                     }
                 }
 
-                function _select(item, index) {
-                    // Keep track of the position in vm.items of
-                    // the item we will be editing
-                    vm.itemIndex = index;
+                function _select(item) {
                     // get a fresh copy of the object to be edited from the database.
                     vm.dogService.getById(item.id)
                         .then(_getByIdSuccess, _getByIdError)
@@ -325,7 +321,6 @@
                     // Changing item from null to empty object indicates any
                     // ui components for editing should be shown
                     vm.item = {};
-                    vm.itemIndex = -1;
                     // set the form $submitted to false and the form and all controls $dirty to false
                     vm.editForm.$setPristine();
                 }
@@ -336,7 +331,6 @@
 
                 function _endEdit() {
                     vm.item = null;
-                    vm.itemIndex = -1;
                 }
 
                 function _save(isValid) {
@@ -356,9 +350,14 @@
                 }
 
                 function _putSuccess(data) {
-                    // To update UI, replace with new version
-                    vm.items[vm.itemIndex] = vm.item;
+                    // replace the item in the array with the updated item.
+                    var index = vm.items.findIndex(function (element, index, array) {
+                        return element.id === vm.item.id;
+                    });
+                    vm.items[index] = vm.item;
                     _endEdit();
+                    // Need to re-filter, since edit may have changed results
+                    _filter();  
                     vm.alertService.success("Update successful");
                 }
 
