@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sabio.Fundamentals", "Sabio
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sabio.Data", "Sabio.Data\Sabio.Data.csproj", "{F696CB27-02F4-4326-A80D-99B070A888CE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sabio.DataAccess", "Sabio.DataAccess\Sabio.DataAccess.csproj", "{819B4521-1E55-4013-B5F3-7EB52C4F2498}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{F696CB27-02F4-4326-A80D-99B070A888CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F696CB27-02F4-4326-A80D-99B070A888CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F696CB27-02F4-4326-A80D-99B070A888CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{819B4521-1E55-4013-B5F3-7EB52C4F2498}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{819B4521-1E55-4013-B5F3-7EB52C4F2498}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{819B4521-1E55-4013-B5F3-7EB52C4F2498}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{819B4521-1E55-4013-B5F3-7EB52C4F2498}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
