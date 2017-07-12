@@ -3,37 +3,37 @@
         <div class="panel panel-default">
             <div class="panel-heading">
                 <span class="h4">Blogs</span>
-                <button type="button" class="btn btn-primary btn-xs pull-right " data-ng-click="exVm.add()">Add New Blog</button>
+                <button type="button" class="btn btn-primary btn-xs pull-right " data-ng-click="blogVm.add()">Add New Blog</button>
             </div>
             <div class="panel-body">
-                <div data-ng-repeat="item in exVm.items">
-                    <a ng-click="exVm.select(item, $index)">{{item.title}}</a>
+                <div data-ng-repeat="item in blogVm.items">
+                    <a ng-click="blogVm.select(item, $index)">{{item.title}}</a>
                 </div>
             </div>
         </div>
     </div>
     <div class="col-md-6">
-        <div class="panel panel-default" ng-show="exVm.item">
+        <div class="panel panel-default" ng-show="blogVm.item">
             <div class="panel-heading">
                 <span class="h4">Create / Edit Blog</span>
             </div>
             <div class="panel-body" style="margin-left: 15px; margin-right: 15px;">
                 <form name="editForm" class="form-horizontal">
                     <div class="form-group">
-                        <label>Id: </label><span ng-bind="exVm.item.id | uppercase"></span>
+                        <label>Id: </label><span ng-bind="blogVm.item.id | uppercase"></span>
                     </div>
                     <div class="form-group">
                         <label>Title</label>
-                        <input type="text" class="form-control" ng-model="exVm.item.title" />
+                        <input type="text" class="form-control" ng-model="blogVm.item.title" />
                     </div>
                     <div class="form-group">
                         <label>Content</label>
-                        <input type="text" class="form-control" ng-model="exVm.item.content" />
+                        <input type="text" class="form-control" ng-model="blogVm.item.content" />
                     </div>
 
-                    <button type="button" class="btn btn-primary btn-sm" ng-click="exVm.save()">Save</button>
-                    <button type="button" class="btn btn-default btn-sm" ng-click="exVm.cancel()">Cancel</button>
-                    <button type="button" class="btn btn-warning btn-sm" ng-click="exVm.delete()">Delete</button>
+                    <button type="button" class="btn btn-primary btn-sm" ng-click="blogVm.save()">Save</button>
+                    <button type="button" class="btn btn-default btn-sm" ng-click="blogVm.cancel()">Cancel</button>
+                    <button type="button" class="btn btn-warning btn-sm" ng-click="blogVm.delete()">Delete</button>
                 </form>
 
             </div>

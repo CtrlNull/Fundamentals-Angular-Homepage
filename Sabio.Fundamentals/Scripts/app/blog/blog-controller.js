@@ -1,16 +1,16 @@
 ﻿(function () {
     "use strict";
-    angular.module(APPNAME)
-    .controller('blogController', BlogController);
+    angular.module('mainApp')
+        .controller('blogController', BlogController);
 
     // Inject services that our controller depends upon
-    BlogController.$inject = ['$scope', 'alertService', 'blogService']
+    BlogController.$inject = ['toastr', 'blogService']
 
-    function BlogController($scope, alertService, blogService) {
+    function BlogController(toastr, blogService) {
         // Administrative stuff
         var vm = this;
         vm.blogService = blogService;
-        vm.alertService = alertService;
+        vm.alertService = toastr;
 
         // ViewModel
         vm.items = [];
@@ -24,23 +24,23 @@
 
         // "The fold"
 
-        _render();
+        vm.$onInit = _init;
 
-        function _render() {
+        function _init() {
             vm.blogService.getAll()
                 .then(_getAllSuccess, _getAllError);
         }
 
-        function _getAllSuccess(response) {
-            if (response && response.data && response.data.items) {
-                vm.items = response.data.items;
+        function _getAllSuccess(data) {
+            if (data && data.items) {
+                vm.items = data.items;
             }
-            vm.alertService.success("Retrieved all");
+            vm.alertService.success("Retrieved Blogs");
         }
 
-        function _getAllError(response) {
-            if (response && response.data && response.data.message) {
-                vm.alertService.error(response.data.message, "GetAll failed");
+        function _getAllError(error) {
+            if (error && error.message) {
+                vm.alertService.error(error.message, "GetAll failed");
             }
             else {
                 vm.alertService.error("Unable to retrieve data", "GetAll failed");
@@ -56,18 +56,18 @@
                 .then(_getByIdSuccess, _getByIdError)
         }
 
-        function _getByIdSuccess(response) {
-            if (response && response.data && response.data.item) {
-                vm.item = response.data.item;
+        function _getByIdSuccess(data) {
+            if (data && data.item) {
+                vm.item = data.item;
             }
             else {
                 vm.alertService.error("Item has been deleted from the system.")
             }
         }
 
-        function _getByIdError(response) {
-            if (response && response.data && response.data.message) {
-                vm.alertService.error(response.data.message, "GetById failed");
+        function _getByIdError(error) {
+            if (error && error.message) {
+                vm.alertService.error(error.message, "GetById failed");
             }
             else {
                 vm.alertService.error("Unable to retrieve data", "GetById failed");
@@ -106,35 +106,35 @@
             }
         }
 
-        function _putSuccess(response) {
-            // To update UI, replace with new version
+        function _putSuccess(data) {
+            // To update UI, replace with new version, put doesn't return anything
             vm.items[vm.itemIndex] = vm.item;
             _endEdit();
             vm.alertService.success("Update successful");
         }
 
-        function _putError(response) {
-            if (response && response.data && response.data.message) {
-                vm.alertService.error(response.data.message, "Update failed");
+        function _putError(error) {
+            if (error && error.message) {
+                vm.alertService.error(error.message, "Update failed");
             }
             else {
                 vm.alertService.error("Unable to retrieve data", "Update failed");
             }
         }
 
-        function _postSuccess(response) {
-            if (response && response.data && response.data.item) {
+        function _postSuccess(data) {
+            if (data && data.item) {
                 // To update UI, get id from data
-                vm.item.id = response.data.item;
+                vm.item.id = data.item;
                 vm.items.push(vm.item);
                 _endEdit();
                 vm.alertService.success("Insert successful");
             }
         }
 
-        function _postError(jqXHR) {
-            if (response && response.data && response.data.message) {
-                vm.alertService.error(response.data.message, "Insert failed");
+        function _postError(error) {
+            if (error && error.message) {
+                vm.alertService.error(error.message, "Insert failed");
             }
             else {
                 vm.alertService.error("Unable to retrieve data", "Insert failed");
@@ -144,20 +144,20 @@
         function _delete() {
             if (vm.item.id) {
                 vm.blogService.delete(vm.item.id)
-                .then(_deleteSuccess, _deleteError);
+                    .then(_deleteSuccess_deleteError);
             }
         }
 
-        function _deleteSuccess(response) {
+        function _deleteSuccess(data) {
             // To update UI, replace with new version
             vm.items.splice(vm.itemIndex, 1);
             _endEdit();
             vm.alertService.success("Delete successful");
         }
 
-        function _deleteError(response) {
-            if (response && response.data && response.data.message) {
-                vm.alertService.error(response.data.message, "Delete failed");
+        function _deleteError(error) {
+            if (error && error.message) {
+                vm.alertService.error(error.message, "Delete failed");
             }
             else {
                 vm.alertService.error("Unable to delete item", "Delete failed");

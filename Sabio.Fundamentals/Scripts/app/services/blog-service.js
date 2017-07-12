@@ -1,7 +1,7 @@
 ﻿(function () {
     "use strict";
-    angular.module(APPNAME)
-         .factory('blogService', blogService);
+    angular.module('mainApp')
+        .factory('blogService', blogService);
 
     blogService.$inject = ['$http', '$q'];
 
@@ -124,7 +124,7 @@
 
         function _delete(id) {
             var settings = {
-                url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + id,
+                url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
                 method: 'DELETE',
                 headers: { 'SABIO-AUTH': sabioAuthKey },
                 cache: false,

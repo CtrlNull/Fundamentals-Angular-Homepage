@@ -15,13 +15,14 @@
                     This example builds upon Example 4 by:
                 </p>
                 <ul>
-                    <li>Angular Filtering for Search</li>
-                    <li>Angular Filter to format date</li>
+                    <li>Using a built-in Angular Filter to format date</li>
+                    <li>Filtering with JavaScript filter function*</li>
                     <li>Angular orderBy Filter</li>
                     <li>Custom Angular pagination filter</li>
                     <li>Using select controls with ngOptions</li>
                     <li>uib-pagination control</li>
                 </ul>
+                <div>* Chose not to use angular fitlering for search, since it is difficult to combine with angular paging and still get a count of the number of matches. </div>
             </div>
             <div class="col-md-6">
                 <div class="panel panel-default">
@@ -31,13 +32,12 @@
                     </div>
                     <div class="panel-body">
                         <form class="form-inline">
-
+                            <div class="pull-right row" style="padding: 4px;">{{dogVm.filteredItems.length + ' matches'}}</div>
                             <div class="form-group">
                                 <label>Find</label>
                                 <input type="text" class="form-control input-sm" placeholder="name/breed"
-                                       ng-model="dogVm.searchText" ng-change="dogVm.searchTextChange()" />
+                                       ng-model="dogVm.searchText"  ng-change="dogVm.filter()"/>
                             </div>
-
 
                             <div class="form-group">
                                 <label for="sortBy">Sort By</label>
@@ -56,6 +56,8 @@
                             </div>
 
                         </form>
+                        
+                        <div class="clearfix"></div>
                         <hr />
                         <div data-ng-repeat="item in dogVm.filteredItems | orderBy: dogVm.orderBy : dogVm.reverse | paginate: dogVm.currentPage : dogVm.itemsPerPage ">
                             <a ng-click="dogVm.select(item, $index)">
@@ -89,105 +91,96 @@
                                 <label>Id: </label><span ng-bind="dogVm.item.id | uppercase"></span>
                             </div>
                             <div class="form-group"
-                                 ng-class="{'has-error' : dogVm.editForm.name.$invalid && (dogVm.editForm.$submitted || dogVm.editForm.name.$dirty)}">
+                                 ng-class="{'has-error' : dogVm.hasValidationError('name')}">
                                 <label>Name</label>
                                 <input type="text" name="name" class="form-control" ng-model="dogVm.item.name" required ng-maxlength="50" />
-                                <div ng-show="dogVm.editForm.$submitted || dogVm.editForm.name.$dirty">
-                                    <span ng-show="dogVm.editForm.name.$error.required"
-                                          class="help-block">Name is required</span>
-                                </div>
+                                <span ng-show="dogVm.showValidationError('name','required')"
+                                      class="help-block">Name is required</span>
+                                <span ng-show="dogVm.showValidationError('name','maxlength')"
+                                      class="help-block">Name can be no more than 50 characters</span>
                             </div>
                             <div class="form-group"
-                                 ng-class="{'has-error' : dogVm.editForm.breed.$invalid && (dogVm.editForm.$submitted || dogVm.editForm.breed.$dirty)}">
+                                 ng-class="{'has-error' : dogVm.hasValidationError('breed')}">
                                 <label>Breed</label>
                                 <input type="text" name="breed" class="form-control" ng-model="dogVm.item.breed" required ng-minlength="3" ng-maxlength="50" />
-                                <div ng-show="dogVm.editForm.$submitted || dogVm.editForm.breed.$dirty">
-                                    <p ng-show="dogVm.editForm.breed.$error.required"
-                                       class="help-block">Breed is required</p>
-                                    <p ng-show="dogVm.editForm.breed.$error.minlength"
-                                       class="help-block">Breed must be at least 3 characters</p>
-                                    <p ng-show="dogVm.editForm.breed.$error.maxlength"
-                                       class="help-block">Breed can be no more than 50 characters</p>
-                                </div>
+                                <p ng-show="dogVm.showValidationError('breed','required')"
+                                   class="help-block">Breed is required</p>
+                                <p ng-show="dogVm.showValidationError('breed','minlength')"
+                                   class="help-block">Breed must be at least 3 characters</p>
+                                <p ng-show="dogVm.showValidationError('breed','maxlength')"
+                                   class="help-block">Breed can be no more than 50 characters</p>
+
                             </div>
-                            <div class="form-group"
-                                 ng-class="{'has-error' : dogVm.editForm.weight.$invalid && (dogVm.editForm.$submitted || dogVm.editForm.weight.$dirty)}">
-                                <label>Weight (lbs)</label>
-                                <input type="number" class="form-control" name="weight"
-                                       ng-model="dogVm.item.weight" required ng-min="1" ng-max="250" />
-                                <div ng-show="dogVm.editForm.$submitted || dogVm.editForm.weight.$dirty">
-                                    <span ng-show="dogVm.editForm.weight.$error.required"
+                            <div class="form-group" ng-class="{'has-error' : dogVm.hasValidationError('weight')}">
+                                    <label>Weight (lbs)</label>
+                                    <input type="number" class="form-control" name="weight"
+                                           ng-model="dogVm.item.weight" required ng-min="1" ng-max="250" />
+                                    <span ng-show="dogVm.showValidationError('weight','required')"
                                           class="help-block">
                                         Weight is required.
                                     </span>
-                                    <span ng-show="dogVm.editForm.weight.$error.min"
+                                    <span ng-show="dogVm.showValidationError('weight','min')"
                                           class="help-block">
                                         Weight must be at least 1 lb.
                                     </span>
-                                    <span ng-show="dogVm.editForm.weight.$error.max"
+                                    <span ng-show="dogVm.showValidationError('weight','max')"
                                           class="help-block">
                                         Weight cannot be more than 250 lbs.
                                     </span>
                                 </div>
-                            </div>
-                            <div class="form-group"
-                                 ng-class="{'has-error' : dogVm.editForm.birthDate.$invalid && (dogVm.editForm.$submitted || dogVm.editForm.birthDate.$dirty)}">
-                                <label>Birthdate</label>
-                                <input type="text" name="birthDate" class="form-control" ng-model="dogVm.item.birthDate" required />
-                                <div ng-show="dogVm.editForm.$submitted || dogVm.editForm.birthDate.$dirty">
-                                    <span ng-show="dogVm.editForm.birthDate.$error.required"
+                                <div class="form-group"
+                                     ng-class="{'has-error' : dogVm.hasValidationError('birthDate')}">
+                                    <label>Birthdate</label>
+                                    <input type="text" name="birthDate" class="form-control" ng-model="dogVm.item.birthDate" required />
+                                    <span ng-show="dogVm.showValidationError('birthDate', 'required')"
                                           class="help-block">Birthdate is required</span>
                                 </div>
-                            </div>
-                            <div class="form-group"
-                                 ng-class="{'has-error' : dogVm.editForm.gender.$invalid && (dogVm.editForm.$submitted || dogVm.editForm.gender.$dirty)}">
-                                <label>Gender</label>
-                                <div>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="gender" value="M" ng-model="dogVm.item.gender" required />
-                                        Male
-                                    </label>
-                                    <label class="radio-inline">
-                                        <input type="radio" name="gender" value="F" ng-model="dogVm.item.gender" required />
-                                        Female
-                                    </label>
-                                    <div ng-show="dogVm.editForm.$submitted || dogVm.editForm.gender.$dirty">
-                                        <p ng-show="dogVm.editForm.gender.$error.required"
+                                <div class="form-group"
+                                     ng-class="{'has-error' : dogVm.hasValidationError('gender')}">
+                                    <label>Gender</label>
+                                    <div>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="gender" value="M" ng-model="dogVm.item.gender" required />
+                                            Male
+                                        </label>
+                                        <label class="radio-inline">
+                                            <input type="radio" name="gender" value="F" ng-model="dogVm.item.gender" required />
+                                            Female
+                                        </label>
+                                        <p ng-show="dogVm.showValidationError('gender','required')"
                                            class="help-block">
                                             Gender is required
                                         </p>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Other</label>
-                                <div>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" ng-model="dogVm.item.isNeutered" />
-                                        Neutered/Spayed
-                                    </label>
-                                    <label class="checkbox-inline">
-                                        <input type="checkbox" ng-model="dogVm.item.isMicrochipped" />
-                                        Microchipped
-                                    </label>
+                                <div class="form-group">
+                                    <label>Other</label>
+                                    <div>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" ng-model="dogVm.item.isNeutered" />
+                                            Neutered/Spayed
+                                        </label>
+                                        <label class="checkbox-inline">
+                                            <input type="checkbox" ng-model="dogVm.item.isMicrochipped" />
+                                            Microchipped
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <button type="submit" class="btn btn-primary btn-sm"
-                                    ng-enabled="dogVm.editForm.$dirty">
-                                Save
-                            </button>
-                            <button type="button" class="btn btn-default btn-sm"
-                                    ng-click="dogVm.cancel()"
-                                    ng-enabled="dogVm.editForm.$dirty">
-                                Cancel
-                            </button>
-                            <button type="button" class="btn btn-warning btn-sm"
-                                    ng-click="dogVm.delete()"
-                                    ng-show="dogVm.item.id">
-                                Delete
-                            </button>
-                        </form>
+                                <button type="submit" class="btn btn-primary btn-sm"
+                                        ng-enabled="dogVm.editForm.$dirty">
+                                    Save
+                                </button>
+                                <button type="button" class="btn btn-default btn-sm"
+                                        ng-click="dogVm.cancel()">
+                                    Cancel
+                                </button>
+                                <button type="button" class="btn btn-warning btn-sm"
+                                        ng-click="dogVm.delete()"
+                                        ng-show="dogVm.item.id">
+                                    Delete
+                                </button>
+</form>
 
                     </div>
                 </div>
@@ -255,13 +248,12 @@
                 vm.searchText = '';
                 vm.orderBy = 'name';
                 vm.reverse = '';
-                //vm.$scope.$watch(vm.searchText, _filter);
-
-                vm.searchTextChange = _filter;
-
-                // "The fold"
+                vm.filter = _filter;
 
                 vm.$onInit = _init;
+
+                vm.hasValidationError = _hasValidationError;
+                vm.showValidationError = _showValidationError;
 
                 // "The fold"
 
@@ -419,6 +411,16 @@
                     else {
                         vm.alertService.error("Unable to delete item", "Delete failed");
                     }
+                }
+
+                function _hasValidationError(propertyName) {
+                    return (vm.editForm.$submitted || vm.editForm[propertyName].$dirty)
+                        && vm.editForm[propertyName].$invalid;
+                }
+
+                function _showValidationError(propertyName, ruleName) {
+                    return (vm.editForm.$submitted || vm.editForm[propertyName].$dirty)
+                    && vm.editForm[propertyName].$error[ruleName];
                 }
             }
 

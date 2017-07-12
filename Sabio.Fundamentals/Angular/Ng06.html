@@ -42,11 +42,15 @@
     <script src="/Scripts/angular-ui/ui-bootstrap.min.js"></script>
     <script src="/Scripts/angular-ui/ui-bootstrap-tpls.min.js"></script>
     
+    <script>
+            // Establish Module Name
+            var APPNAME = 'mainApp';
+    </script>
 
     <script>
 
         (function () {
-            angular.module('mainApp', ['toastr', 'ui.bootstrap', 'ui.router']);
+            angular.module(APPNAME, ['toastr', 'ui.bootstrap', 'ui.router']);
         })();
 
     </script>
@@ -59,7 +63,7 @@
     <script>
 
         (function (undefined) {
-            angular.module('mainApp')
+            angular.module(APPNAME)
                 .config(['$stateProvider', MainRouter]);
 
             MainRouter.$inject = ['$stateProvider'];
@@ -92,10 +96,10 @@
     </script>
 
     <script src="/Scripts/app/services/dog-service.js"></script>
-    <script src="../Scripts/app/services/blog-service.js"></script>
+    <script src="/Scripts/app/services/blog-service.js"></script>
     <script src="/Scripts/app/services/alert-service.js"></script>
 
-    <script src="../Scripts/app/dog/dog-controller.js"></script>
-
+    <script src="/Scripts/app/dog/dog-controller.js"></script>
+    <script src="/Scripts/app/blog/blog-controller.js"></script>
 </body>
 </html>
