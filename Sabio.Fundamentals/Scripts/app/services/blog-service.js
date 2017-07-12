@@ -124,7 +124,7 @@
 
         function _delete(id) {
             var settings = {
-                url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
+                url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + id,
                 method: 'DELETE',
                 headers: { 'SABIO-AUTH': sabioAuthKey },
                 cache: false,

@@ -60,12 +60,18 @@
                                 <input type="text" class="form-control" ng-model="exVm.item.content" />
                             </div>
 
-                            <button type="button" class="btn btn-primary btn-sm" 
-                                    ng-click="exVm.save()">Save</button>
-                            <button type="button" class="btn btn-default btn-sm" 
-                                    ng-click="exVm.cancel()">Cancel</button>
-                            <button type="button" class="btn btn-warning btn-sm" 
-                                    ng-click="exVm.delete()">Delete</button>
+                            <button type="button" class="btn btn-primary btn-sm"
+                                    ng-click="exVm.save()">
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm"
+                                    ng-click="exVm.cancel()">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm"
+                                    ng-click="exVm.delete(exVm.item)">
+                                Delete
+                            </button>
                         </form>
 
                     </div>
@@ -89,7 +95,7 @@
         (function () {
             "use strict";
             angular.module('mainApp')
-                 .factory('blogService', blogService);
+                .factory('blogService', blogService);
 
             blogService.$inject = ['$http', '$q'];
 
@@ -105,7 +111,7 @@
 
                 function _getAll() {
                     var settings = {
-                        url: 'http://sabioapi2.azurewebsites.net/api/blogs',
+                        url: 'https://sabioapi2.azurewebsites.net/api/blogs',
                         method: 'GET',
                         headers: { 'SABIO-AUTH': sabioAuthKey },
                         cache: false,
@@ -131,7 +137,7 @@
 
                 function _getById(id) {
                     var settings = {
-                        url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + id,
+                        url: 'https://sabioapi2.azurewebsites.net/api/blogs/' + id,
                         method: 'GET',
                         headers: { 'SABIO-AUTH': sabioAuthKey },
                         cache: false,
@@ -157,7 +163,7 @@
 
                 function _post(blog) {
                     var settings = {
-                        url: 'http://sabioapi2.azurewebsites.net/api/blogs',
+                        url: 'https://sabioapi2.azurewebsites.net/api/blogs',
                         method: 'POST',
                         headers: { 'SABIO-AUTH': sabioAuthKey },
                         cache: false,
@@ -184,7 +190,7 @@
 
                 function _put(blog) {
                     var settings = {
-                        url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
+                        url: 'https://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
                         method: 'PUT',
                         headers: { 'SABIO-AUTH': sabioAuthKey },
                         cache: false,
@@ -212,7 +218,7 @@
 
                 function _delete(id) {
                     var settings = {
-                        url: 'http://sabioapi2.azurewebsites.net/api/blogs/' + blog.id,
+                        url: 'https://sabioapi2.azurewebsites.net/api/blogs/' + id,
                         method: 'DELETE',
                         headers: { 'SABIO-AUTH': sabioAuthKey },
                         cache: false,
@@ -243,14 +249,15 @@
         (function () {
             "use strict";
             angular.module('mainApp')
-            .controller('blogController', BlogController);
+                .controller('blogController', BlogController);
 
             // Inject services that our controller depends upon
-            BlogController.$inject = ['toastr', 'blogService']
+            BlogController.$inject = ['$scope', 'toastr', 'blogService']
 
-            function BlogController(toastr, blogService) {
+            function BlogController($scope, toastr, blogService) {
                 // Administrative stuff
                 var vm = this;
+                vm.$scope = $scope;
                 vm.blogService = blogService;
                 vm.alertService = toastr;
 
@@ -386,7 +393,7 @@
                 function _delete() {
                     if (vm.item.id) {
                         vm.blogService.delete(vm.item.id)
-                            .then(_deleteSuccess_deleteError);
+                            .then(_deleteSuccess, _deleteError);
                     }
                 }
 
@@ -398,7 +405,7 @@
                 }
 
                 function _deleteError(error) {
-                    if (error &&  error.message) {
+                    if (error && error.message) {
                         vm.alertService.error(error.message, "Delete failed");
                     }
                     else {
