@@ -13,18 +13,18 @@
 
 })();
 
-//feature-two\modules.js
-(function () {
-    angular
-        .module('adminApp.featureTwo', [])
-   
-})();
-
 //feature-one\modules.js
 (function () {
     angular
         .module('adminApp.featureOne', [])
 
+})();
+
+//feature-two\modules.js
+(function () {
+    angular
+        .module('adminApp.featureTwo', [])
+   
 })();
 
 //routes\app.routes.js
@@ -107,24 +107,6 @@
 
 })();
 
-//feature-two\controllers\featureTwoCtrl.js
-(function () {
-
-    'use strict';
-    angular
-        .module('adminApp.featureTwo')
-        .controller('featureTwoController', FeatureTwoController);
-
-    FeatureTwoController.$inject = ['$scope'];
-
-    function FeatureTwoController($scope) {
-
-    }
-
-})();
-
-
-
 //feature-one\controllers\featureOneCtrl.js
 (function () {
     angular
@@ -158,3 +140,21 @@
 
 
 })();
+
+//feature-two\controllers\featureTwoCtrl.js
+(function () {
+
+    'use strict';
+    angular
+        .module('adminApp.featureTwo')
+        .controller('featureTwoController', FeatureTwoController);
+
+    FeatureTwoController.$inject = ['$scope'];
+
+    function FeatureTwoController($scope) {
+
+    }
+
+})();
+
+
