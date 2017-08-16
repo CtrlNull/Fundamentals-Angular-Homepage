@@ -158,26 +158,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="app\admin\app.admin.js" />
-    <Content Include="app\admin\modules\routes\app.routes.js" />
-    <Content Include="app\admin\modules\feature-one\controllers\featureOneCtrl.js" />
-    <Content Include="app\admin\modules\feature-one\featureOne.html" />
-    <Content Include="app\admin\modules\feature-one\modules.js" />
-    <Content Include="app\admin\modules\feature-two\controllers\featureTwoCtrl.js" />
-    <Content Include="app\admin\modules\feature-two\featureTwo.html" />
-    <Content Include="app\admin\modules\feature-two\modules.js" />
-    <Content Include="app\admin\modules\services\demoAppService.js" />
-    <Content Include="app\admin\index.html" />
-    <Content Include="app\public\app.public.js" />
-    <Content Include="app\public\index.html" />
-    <Content Include="app\public\modules\feature-four\controllers\featureFourCtrl.js" />
-    <Content Include="app\public\modules\feature-four\featureFour.html" />
-    <Content Include="app\public\modules\feature-four\modules.js" />
-    <Content Include="app\public\modules\feature-three\controllers\featureThreeCtrl.js" />
-    <Content Include="app\public\modules\feature-three\featureThree.html" />
-    <Content Include="app\public\modules\feature-three\modules.js" />
-    <Content Include="app\public\modules\routes\app.routes.js" />
-    <Content Include="app\public\modules\services\publicAppService.js" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="favicon.ico" />
@@ -225,11 +205,6 @@
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="app\admin\modules\constants\" />
-    <Folder Include="app\admin\modules\directives\" />
-    <Folder Include="app\admin\modules\filters\" />
-    <Folder Include="app\public\modules\directives\" />
-    <Folder Include="app\public\modules\filters\" />
     <Folder Include="App_Data\" />
     <Folder Include="Models\" />
   </ItemGroup>
@@ -316,4 +291,47 @@
   <!--<Target Name="EnsureNmpPackageBuildAndGulpBuild" BeforeTargets="BeforeBuild">
     <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" />
   </Target>-->
+  <Target Name="CollectDestJsFiles">
+    <Message Text="Adding Destination JavaScript Files To Deployment" Importance="high"/>
+    <ItemGroup>
+      <_CustomFiles Include="Scripts\dest\**\*" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>Scripts\dest\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      CollectDestJsFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CollectDestJsFiles;
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+
+
+  <Target Name="CollectAppHtmlFiles">
+    <Message Text="Adding HTML Template Files To Deployment" Importance="high"/>
+    <ItemGroup>
+      <_CustomFiles Include="app\**\*.html" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>app\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      CollectAppHtmlFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CollectAppHtmlFiles;
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+
+
+
 </Project>
