@@ -9,8 +9,7 @@
     function BlogController(toastr, blogService) {
         // Administrative stuff
         var vm = this;
-        vm.blogService = blogService;
-        vm.alertService = toastr;
+
 
         // ViewModel
         vm.items = [];
@@ -27,7 +26,7 @@
         vm.$onInit = _init;
 
         function _init() {
-            vm.blogService.getAll()
+            blogService.getAll()
                 .then(_getAllSuccess, _getAllError);
         }
 
@@ -35,15 +34,15 @@
             if (data && data.items) {
                 vm.items = data.items;
             }
-            vm.alertService.success("Retrieved Blogs");
+            alertService.success("Retrieved Blogs");
         }
 
         function _getAllError(error) {
             if (error && error.message) {
-                vm.alertService.error(error.message, "GetAll failed");
+                alertService.error(error.message, "GetAll failed");
             }
             else {
-                vm.alertService.error("Unable to retrieve data", "GetAll failed");
+                alertService.error("Unable to retrieve data", "GetAll failed");
             }
         }
 
@@ -52,7 +51,7 @@
             // the item we will be editing
             vm.itemIndex = index;
             // get a fresh copy of the object to be edited from the database.
-            vm.blogService.getById(item.id)
+            blogService.getById(item.id)
                 .then(_getByIdSuccess, _getByIdError)
         }
 
@@ -61,16 +60,16 @@
                 vm.item = data.item;
             }
             else {
-                vm.alertService.error("Item has been deleted from the system.")
+                alertService.error("Item has been deleted from the system.")
             }
         }
 
         function _getByIdError(error) {
             if (error && error.message) {
-                vm.alertService.error(error.message, "GetById failed");
+                alertService.error(error.message, "GetById failed");
             }
             else {
-                vm.alertService.error("Unable to retrieve data", "GetById failed");
+                alertService.error("Unable to retrieve data", "GetById failed");
             }
         }
 
@@ -97,11 +96,11 @@
             // a known valid authorId of 1931.
             vm.item.authorId = 1931;
             if (vm.item.id) {
-                vm.blogService.put(vm.item)
+                blogService.put(vm.item)
                     .then(_putSuccess, _putError);
             }
             else {
-                vm.blogService.post(vm.item)
+                blogService.post(vm.item)
                     .then(_postSuccess, _postError);
             }
         }
@@ -110,15 +109,15 @@
             // To update UI, replace with new version, put doesn't return anything
             vm.items[vm.itemIndex] = vm.item;
             _endEdit();
-            vm.alertService.success("Update successful");
+            alertService.success("Update successful");
         }
 
         function _putError(error) {
             if (error && error.message) {
-                vm.alertService.error(error.message, "Update failed");
+                alertService.error(error.message, "Update failed");
             }
             else {
-                vm.alertService.error("Unable to retrieve data", "Update failed");
+                alertService.error("Unable to retrieve data", "Update failed");
             }
         }
 
@@ -128,22 +127,22 @@
                 vm.item.id = data.item;
                 vm.items.push(vm.item);
                 _endEdit();
-                vm.alertService.success("Insert successful");
+                alertService.success("Insert successful");
             }
         }
 
         function _postError(error) {
             if (error && error.message) {
-                vm.alertService.error(error.message, "Insert failed");
+                alertService.error(error.message, "Insert failed");
             }
             else {
-                vm.alertService.error("Unable to retrieve data", "Insert failed");
+                alertService.error("Unable to retrieve data", "Insert failed");
             }
         }
 
         function _delete() {
             if (vm.item.id) {
-                vm.blogService.delete(vm.item.id)
+                blogService.delete(vm.item.id)
                     .then(_deleteSuccess_deleteError);
             }
         }
@@ -152,15 +151,15 @@
             // To update UI, replace with new version
             vm.items.splice(vm.itemIndex, 1);
             _endEdit();
-            vm.alertService.success("Delete successful");
+            alertService.success("Delete successful");
         }
 
         function _deleteError(error) {
             if (error && error.message) {
-                vm.alertService.error(error.message, "Delete failed");
+                alertService.error(error.message, "Delete failed");
             }
             else {
-                vm.alertService.error("Unable to delete item", "Delete failed");
+                alertService.error("Unable to delete item", "Delete failed");
             }
         }
     }

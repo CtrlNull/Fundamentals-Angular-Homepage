@@ -36,7 +36,7 @@
                             <div class="form-group">
                                 <label>Find</label>
                                 <input type="text" class="form-control input-sm" placeholder="name/breed"
-                                       ng-model="dogVm.searchText"  ng-change="dogVm.filter()"/>
+                                       ng-model="dogVm.searchText" ng-change="dogVm.filter()" />
                             </div>
 
                             <div class="form-group">
@@ -56,7 +56,7 @@
                             </div>
 
                         </form>
-                        
+
                         <div class="clearfix"></div>
                         <hr />
                         <div data-ng-repeat="item in dogVm.filteredItems | orderBy: dogVm.orderBy : dogVm.reverse | paginate: dogVm.currentPage : dogVm.itemsPerPage ">
@@ -112,75 +112,75 @@
 
                             </div>
                             <div class="form-group" ng-class="{'has-error' : dogVm.hasValidationError('weight')}">
-                                    <label>Weight (lbs)</label>
-                                    <input type="number" class="form-control" name="weight"
-                                           ng-model="dogVm.item.weight" required ng-min="1" ng-max="250" />
-                                    <span ng-show="dogVm.showValidationError('weight','required')"
-                                          class="help-block">
-                                        Weight is required.
-                                    </span>
-                                    <span ng-show="dogVm.showValidationError('weight','min')"
-                                          class="help-block">
-                                        Weight must be at least 1 lb.
-                                    </span>
-                                    <span ng-show="dogVm.showValidationError('weight','max')"
-                                          class="help-block">
-                                        Weight cannot be more than 250 lbs.
-                                    </span>
+                                <label>Weight (lbs)</label>
+                                <input type="number" class="form-control" name="weight"
+                                       ng-model="dogVm.item.weight" required ng-min="1" ng-max="250" />
+                                <span ng-show="dogVm.showValidationError('weight','required')"
+                                      class="help-block">
+                                    Weight is required.
+                                </span>
+                                <span ng-show="dogVm.showValidationError('weight','min')"
+                                      class="help-block">
+                                    Weight must be at least 1 lb.
+                                </span>
+                                <span ng-show="dogVm.showValidationError('weight','max')"
+                                      class="help-block">
+                                    Weight cannot be more than 250 lbs.
+                                </span>
+                            </div>
+                            <div class="form-group"
+                                 ng-class="{'has-error' : dogVm.hasValidationError('birthDate')}">
+                                <label>Birthdate</label>
+                                <input type="text" name="birthDate" class="form-control" ng-model="dogVm.item.birthDate" required />
+                                <span ng-show="dogVm.showValidationError('birthDate', 'required')"
+                                      class="help-block">Birthdate is required</span>
+                            </div>
+                            <div class="form-group"
+                                 ng-class="{'has-error' : dogVm.hasValidationError('gender')}">
+                                <label>Gender</label>
+                                <div>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="gender" value="M" ng-model="dogVm.item.gender" required />
+                                        Male
+                                    </label>
+                                    <label class="radio-inline">
+                                        <input type="radio" name="gender" value="F" ng-model="dogVm.item.gender" required />
+                                        Female
+                                    </label>
+                                    <p ng-show="dogVm.showValidationError('gender','required')"
+                                       class="help-block">
+                                        Gender is required
+                                    </p>
                                 </div>
-                                <div class="form-group"
-                                     ng-class="{'has-error' : dogVm.hasValidationError('birthDate')}">
-                                    <label>Birthdate</label>
-                                    <input type="text" name="birthDate" class="form-control" ng-model="dogVm.item.birthDate" required />
-                                    <span ng-show="dogVm.showValidationError('birthDate', 'required')"
-                                          class="help-block">Birthdate is required</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Other</label>
+                                <div>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" ng-model="dogVm.item.isNeutered" />
+                                        Neutered/Spayed
+                                    </label>
+                                    <label class="checkbox-inline">
+                                        <input type="checkbox" ng-model="dogVm.item.isMicrochipped" />
+                                        Microchipped
+                                    </label>
                                 </div>
-                                <div class="form-group"
-                                     ng-class="{'has-error' : dogVm.hasValidationError('gender')}">
-                                    <label>Gender</label>
-                                    <div>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="gender" value="M" ng-model="dogVm.item.gender" required />
-                                            Male
-                                        </label>
-                                        <label class="radio-inline">
-                                            <input type="radio" name="gender" value="F" ng-model="dogVm.item.gender" required />
-                                            Female
-                                        </label>
-                                        <p ng-show="dogVm.showValidationError('gender','required')"
-                                           class="help-block">
-                                            Gender is required
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label>Other</label>
-                                    <div>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" ng-model="dogVm.item.isNeutered" />
-                                            Neutered/Spayed
-                                        </label>
-                                        <label class="checkbox-inline">
-                                            <input type="checkbox" ng-model="dogVm.item.isMicrochipped" />
-                                            Microchipped
-                                        </label>
-                                    </div>
-                                </div>
+                            </div>
 
-                                <button type="submit" class="btn btn-primary btn-sm"
-                                        ng-enabled="dogVm.editForm.$dirty">
-                                    Save
-                                </button>
-                                <button type="button" class="btn btn-default btn-sm"
-                                        ng-click="dogVm.cancel()">
-                                    Cancel
-                                </button>
-                                <button type="button" class="btn btn-warning btn-sm"
-                                        ng-click="dogVm.delete()"
-                                        ng-show="dogVm.item.id">
-                                    Delete
-                                </button>
-</form>
+                            <button type="submit" class="btn btn-primary btn-sm"
+                                    ng-enabled="dogVm.editForm.$dirty">
+                                Save
+                            </button>
+                            <button type="button" class="btn btn-default btn-sm"
+                                    ng-click="dogVm.cancel()">
+                                Cancel
+                            </button>
+                            <button type="button" class="btn btn-warning btn-sm"
+                                    ng-click="dogVm.delete()"
+                                    ng-show="dogVm.item.id">
+                                Delete
+                            </button>
+                        </form>
 
                     </div>
                 </div>
@@ -214,7 +214,7 @@
         (function () {
             "use strict";
             angular.module('mainApp')
-            .controller('dogController', DogController);
+                .controller('dogController', DogController);
 
             // Inject services that our controller depends upon
             DogController.$inject = ['$scope', 'alertService', 'dogService']
@@ -222,8 +222,7 @@
             function DogController($scope, alertService, dogService) {
                 // Administrative stuff
                 var vm = this;
-                vm.dogService = dogService;
-                vm.alertService = alertService;
+
                 vm.$scope = $scope;
 
                 // ViewModel
@@ -257,7 +256,8 @@
                 // "The fold"
 
                 function _init() {
-                    vm.dogService.getAll()
+
+                    dogService.getAll()
                         .then(_getAllSuccess, _getAllError);
                 }
 
@@ -270,7 +270,7 @@
                         vm.items = data.items;
                         _filter();
                     }
-                    vm.alertService.success("Retrieved all");
+                    alertService.success("Retrieved all");
                 }
 
                 function _dogFilter(dog) {
@@ -279,15 +279,15 @@
                     }
                     var searchString = vm.searchText.toUpperCase();
                     return (dog.name.toUpperCase().indexOf(searchString) > -1)
-                            || (dog.breed.toUpperCase().indexOf(searchString) > -1);
+                        || (dog.breed.toUpperCase().indexOf(searchString) > -1);
                 }
 
                 function _getAllError(error) {
                     if (error && error.message) {
-                        vm.alertService.error(error.message, "GetAll failed");
+                        alertService.error(error.message, "GetAll failed");
                     }
                     else {
-                        vm.alertService.error("Unable to retrieve data", "GetAll failed");
+                        alertService.error("Unable to retrieve data", "GetAll failed");
                     }
                 }
 
@@ -303,16 +303,16 @@
                         vm.item = data.item;
                     }
                     else {
-                        vm.alertService.error("Item has been deleted from the system.")
+                        alertService.error("Item has been deleted from the system.")
                     }
                 }
 
                 function _getByIdError(error) {
                     if (error && error.message) {
-                        vm.alertService.error(error.message, "GetById failed");
+                        alertService.error(error.message, "GetById failed");
                     }
                     else {
-                        vm.alertService.error("Unable to retrieve data", "GetById failed");
+                        alertService.error("Unable to retrieve data", "GetById failed");
                     }
                 }
 
@@ -335,7 +335,7 @@
 
                 function _save(isValid) {
                     if (vm.editForm.$invalid) {
-                        vm.alertService.warning('Some information is not entered correctly, please review the validation messages and try again.',
+                        alertService.warning('Some information is not entered correctly, please review the validation messages and try again.',
                             'Save Failed');
                         return;
                     }
@@ -357,16 +357,16 @@
                     vm.items[index] = vm.item;
                     _endEdit();
                     // Need to re-filter, since edit may have changed results
-                    _filter();  
-                    vm.alertService.success("Update successful");
+                    _filter();
+                    alertService.success("Update successful");
                 }
 
                 function _putError(error) {
                     if (error && error.message) {
-                        vm.alertService.error(error.message, "Update failed");
+                        alertService.error(error.message, "Update failed");
                     }
                     else {
-                        vm.alertService.error("Unable to retrieve data", "Update failed");
+                        alertService.error("Unable to retrieve data", "Update failed");
                     }
                 }
 
@@ -376,23 +376,23 @@
                         vm.item.id = data.item;
                         vm.items.push(vm.item);
                         _endEdit();
-                        vm.alertService.success("Insert successful");
+                        alertService.success("Insert successful");
                     }
                 }
 
                 function _postError(error) {
                     if (error && error.message) {
-                        vm.alertService.error(error.message, "Insert failed");
+                        alertService.error(error.message, "Insert failed");
                     }
                     else {
-                        vm.alertService.error("Unable to retrieve data", "Insert failed");
+                        alertService.error("Unable to retrieve data", "Insert failed");
                     }
                 }
 
                 function _delete() {
                     if (vm.item.id) {
                         vm.dogService.delete(vm.item.id)
-                        .then(_deleteSuccess, _deleteError);
+                            .then(_deleteSuccess, _deleteError);
                     }
                 }
 
@@ -400,15 +400,15 @@
                     // To update UI, replace with new version
                     vm.items.splice(vm.itemIndex, 1);
                     _endEdit();
-                    vm.alertService.success("Delete successful");
+                    alertService.success("Delete successful");
                 }
 
                 function _deleteError(error) {
                     if (error && error.message) {
-                        vm.alertService.error(error.message, "Delete failed");
+                        alertService.error(error.message, "Delete failed");
                     }
                     else {
-                        vm.alertService.error("Unable to delete item", "Delete failed");
+                        alertService.error("Unable to delete item", "Delete failed");
                     }
                 }
 
@@ -419,7 +419,7 @@
 
                 function _showValidationError(propertyName, ruleName) {
                     return (vm.editForm.$submitted || vm.editForm[propertyName].$dirty)
-                    && vm.editForm[propertyName].$error[ruleName];
+                        && vm.editForm[propertyName].$error[ruleName];
                 }
             }
 
@@ -429,4 +429,3 @@
 
 </body>
 </html>
-
