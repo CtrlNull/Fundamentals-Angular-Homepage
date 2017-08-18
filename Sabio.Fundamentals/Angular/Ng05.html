@@ -293,7 +293,7 @@
 
                 function _select(item) {
                     // get a fresh copy of the object to be edited from the database.
-                    vm.dogService.getById(item.id)
+                    dogService.getById(item.id)
                         .then(_getByIdSuccess, _getByIdError)
                     vm.editForm.$setPristine();
                 }
@@ -340,11 +340,11 @@
                         return;
                     }
                     if (vm.item.id) {
-                        vm.dogService.put(vm.item)
+                        dogService.put(vm.item)
                             .then(_putSuccess, _putError);
                     }
                     else {
-                        vm.dogService.post(vm.item)
+                        dogService.post(vm.item)
                             .then(_postSuccess, _postError);
                     }
                 }
@@ -391,7 +391,7 @@
 
                 function _delete() {
                     if (vm.item.id) {
-                        vm.dogService.delete(vm.item.id)
+                        dogService.delete(vm.item.id)
                             .then(_deleteSuccess, _deleteError);
                     }
                 }
