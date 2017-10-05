@@ -1,0 +1,218 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+
+    <title>Registration Page</title>
+
+    <link href="bootstrap.min.css" rel="stylesheet" />
+
+    <style type="text/css">
+        #inputForm{
+            border: 1px solid;
+            padding: 20px;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="inputForm">
+            <h1>Registration Form</h1>
+            <fieldset>
+                <div class="form-group">
+                    <label class="control-label">First Name</label>
+                    <div class="controls">
+                        <input type="text" placeholder="First Name" id="firstName"  class="form-control" name="First Name" />
+                    </div>
+                    </div>
+
+                <div class="form-group">
+                    <label class="control-label">Last Name</label>
+                    <div class="controls">
+                        <input type="text" id="lastName" placeholder="Last Name"  class="form-control" name="Last Name" />
+                    </div>
+                    </div>
+
+                <div class="form-group">
+                    <label class="control-label">Password</label>
+                    <div class="controls">
+                        <input type="password" id="password"  class="form-control" name="Password" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Confirm Password</label>
+                    <div class="controls">
+                        <input type="password" id="confirmPassword" class="form-control" name="Confirm Password" />
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label">Email</label>
+                    <div class="controls">
+                        <input type="email" id="email" placeholder="Email" class="form-control" name="Email"/>
+                    </div>
+                </div>
+                <input type="submit" id="btnSubmit" class="btn btn-default" value="Submit" />
+            </fieldset>
+        </form>
+
+    </div>
+
+
+    <script src="../Scripts/jquery-3.1.1.min.js"></script>
+    <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
+    <script src="../Scripts/jquery.validate.min.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        sabio.page.startUp = function () {
+            $("#btnSubmit").on("click", sabio.page.handlers.btnSubmit);
+            sabio.page.initializeValidationAuthor();
+        };
+
+        sabio.page.handlers.btnSubmit = function (evt) {
+            evt.preventDefault();
+            console.log("The btn has been pressed");
+
+            if ($("#inputForm").valid()) {
+                console.log("Everything is valid");
+                var postObject = sabio.page.readForm();
+                sabio.page.postData(postObject, sabio.page.ajax.postSuccess, sabio.page.ajax.error);
+                sabio.page.clearForm();
+            } else
+            {
+                console.log("Something is invalid");
+            }
+        }
+
+        sabio.page.ajax = {
+            error: function (xhr, errorText, error) {
+                console.log(xhr);
+                console.log(errorText);
+                console.log(error);
+            },
+            postSuccess: function (data, status, xhr) {
+                console.log(data);
+                console.log(status);
+                console.log(xhr);
+            }
+        }
+
+        sabio.page.postData = function (postData, onSuccess, onError){
+            var url = "https://pacoima-ypi.azurewebsites.net/api/users/register/employer";
+            var settings = {
+                cache: false
+                , type: "POST"
+                , contentType: "application/json"
+                , data: JSON.stringify(postData)
+                , dataType: "json"
+                , success: onSuccess
+                , error: onError
+                ,
+                xhrFields: {
+                    withCredentials: true
+                }
+            };
+            console.log(settings.data);
+            $.ajax(url, settings);
+        }
+
+
+
+        sabio.page.readForm = function () {
+            var firstName = $("#firstName").val();
+            var lastName = $("#lastName").val();
+            var password = $("#password").val();
+            var email = $("#email").val();
+
+            var objectData = {
+                FirstName: firstName
+                , LastName: lastName
+                , Password: password
+                , Email: email
+            }
+
+            console.log(objectData);
+            return objectData;
+        }
+
+        sabio.page.clearForm = function () {
+            $("#inputForm")[0].reset();
+        }
+
+        sabio.page.initializeValidationAuthor = function () {
+            $.validator.addMethod("pwcheck", function (value) {
+                return /^[A-Za-z0-9\d=!\-@._*]*$/.test(value) // consists of only these
+                    && /[a-z]/.test(value) // has a lowercase letter
+                    && /\d/.test(value) // has a digit
+            });
+
+            jQuery.validator.setDefaults({
+                debug: true
+            });
+
+            var validationRules = {
+                "First Name": {
+                    required: true
+                    , minlength: 4
+                },
+                "Password": {
+                    required: true
+                    , minlength: 6
+                    , pwcheck: true
+                    , equalTo: $("#confirmPassword")
+
+                },
+                "Confirm Password": {
+                    required: true
+                    , minlength: 6
+                    , equalTo: $("#password")
+                },
+                "Email": {
+                    required: true
+                    , email: true
+                }
+            }
+
+            var validationMessage = {
+                required: "This is required"
+                , minlength: "Min length is 6"
+                , equalTo: "The passwords must match"
+            }
+
+            var validationOptions = {
+                rules: validationRules
+                , message: validationMessage
+            }
+
+            $("#inputForm").validate(validationOptions);
+
+
+            jQuery.extend(jQuery.validator.messages, {
+                required: "This field is required.",
+                remote: "Please fix this field.",
+                email: "Please enter a valid email address!",
+                url: "Please enter a valid URL.",
+                date: "Please enter a valid date.",
+                dateISO: "Please enter a valid date (ISO).",
+                number: "Please enter a valid number.",
+                digits: "Please enter only digits.",
+                creditcard: "Please enter a valid credit card number.",
+                equalTo: "The passwords must match.",
+                accept: "Please enter a value with a valid extension.",
+                maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
+                minlength: jQuery.validator.format("Please enter at least {0} characters."),
+                rangelength: jQuery.validator.format("Please enter a value between {0} and {1} characters long."),
+                range: jQuery.validator.format("Please enter a value between {0} and {1}."),
+                max: jQuery.validator.format("Please enter a value less than or equal to {0}."),
+                min: jQuery.validator.format("Please enter a value greater than or equal to {0}.")
+                , pwcheck: "Password must contain a number"
+            });
+        }
+
+
+    </script>
+</body>
+</html>

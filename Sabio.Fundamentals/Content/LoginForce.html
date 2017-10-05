@@ -1,0 +1,193 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Login Portal</title>
+    <link href="bootstrap.min.css" rel="stylesheet" />
+    
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-inverse" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <!--<form class="nav navbar-nav navbar-right" id="inputForm">
+                    <div class="form-group">
+                        <input type="button" class="btn btn-default" id="btnLogOut" value="Logout">
+                    </div>
+
+                </form>-->
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+    <div class="container">
+        <form id="inputForm">
+            <h1>Login</h1>
+            <div class="form-group">
+                <label class="control-label">Email</label>
+                <div class="controls">
+                    <input type="email" id="email" placeholder="Email" class="form-control" name="Email" value="qwerty1@yahoo.com"/>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label">Password</label>
+                <div class="controls">
+                    <input type="password" id="password" class="form-control" name="Password" value="qwerty1"/>
+                </div>
+            </div>
+
+            <input type="submit" id="btnSubmit" class="btn btn-default" value="Submit" />
+        </form>
+    </div>
+
+
+
+    <script src="../Scripts/jquery-3.1.1.min.js"></script>
+    <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
+    <script src="../Scripts/jquery.validate.min.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+
+
+
+    <script type="text/javascript">
+        sabio.page.startUp = function () {
+            $("#btnSubmit").on("click", sabio.page.handlers.btnSubmit);
+            sabio.page.initializeValidationAuthor();
+        }
+
+        sabio.page.handlers.btnSubmit = function (evt) {
+            evt.preventDefault();
+            console.log("btnSubmit works");
+
+            if ($("#inputForm").valid()) {
+                console.log("Everything is valid");
+
+                var postObject = sabio.page.readForm();
+                sabio.page.postData(postObject, sabio.page.ajax.postSuccess, sabio.page.ajax.error);
+                console.log()
+
+            } else {
+                console.log("Something is invalid");
+            }
+        };
+
+        sabio.page.readForm = function () {
+            var email = $("#email").val();
+            var password = $("#password").val();
+            console.log(email);
+            console.log(password);
+
+            var objectData = {
+                Email: email
+                , Password: password
+            }
+            console.log(objectData);
+            return objectData;
+        }
+
+        sabio.page.ajax = {
+            error: function (xhr, errorText, error) {
+                console.log(xhr);
+                console.log(errorText);
+                console.log(error);
+            },
+            postSuccess: function (data, status, xhr) {
+                console.log(data);
+                console.log(status);
+                console.log(xhr);
+                window.location.href = "http://localhost:58300/Content/HomePage.html";
+            }
+        }
+
+        sabio.page.postData = function (postData, onSuccess, onError) {
+            var url = "https://pacoima-ypi.azurewebsites.net/api/users/login/force";
+            var settings = {
+                cache: false
+                , type: "POST"
+                , contentType: "application/json"
+                , data: JSON.stringify(postData)
+                , dataType: "json"
+                , success: onSuccess
+                , error: onError
+                ,
+                xhrFields: {
+                    withCredentials: true
+                }
+            };
+            console.log(settings.data);
+            $.ajax(url, settings);
+        }
+
+
+
+        sabio.page.initializeValidationAuthor = function () {
+            $.validator.addMethod("pwcheck", function (value) {
+                return /^[A-Za-z0-9\d=!\-@._*]*$/.test(value) // consists of only these
+                    && /[a-z]/.test(value) // has a lowercase letter
+                    && /\d/.test(value) // has a digit
+            });
+
+            jQuery.validator.setDefaults({
+                debug: true
+            });
+            var validationRules = {
+                "Password": {
+                    required: true
+                    , minlength: 6
+                    , pwcheck: true
+                },
+                "Email": {
+                    required: true
+                    , email: true
+                }
+            }
+
+            var validationMessage = {
+                required: "This is required"
+                , minlength: "Min length is 6"
+                , equalTo: "The passwords must match"
+            }
+
+            var validationOptions = {
+                rules: validationRules
+                , message: validationMessage
+            }
+
+            $("#inputForm").validate(validationOptions);
+
+            jQuery.extend(jQuery.validator.messages, {
+                required: "This field is required.",
+                remote: "Please fix this field.",
+                email: "Please enter a valid email address!",
+                url: "Please enter a valid URL.",
+                date: "Please enter a valid date.",
+                dateISO: "Please enter a valid date (ISO).",
+                number: "Please enter a valid number.",
+                digits: "Please enter only digits.",
+                creditcard: "Please enter a valid credit card number.",
+                equalTo: "The passwords must match.",
+                accept: "Please enter a value with a valid extension.",
+                maxlength: jQuery.validator.format("Please enter no more than {0} characters."),
+                minlength: jQuery.validator.format("Please enter at least {0} characters."),
+                rangelength: jQuery.validator.format("Please enter a value between {0} and {1} characters long."),
+                range: jQuery.validator.format("Please enter a value between {0} and {1}."),
+                max: jQuery.validator.format("Please enter a value less than or equal to {0}."),
+                min: jQuery.validator.format("Please enter a value greater than or equal to {0}.")
+                , pwcheck: "Password must contain a number"
+            });
+        }
+    </script>
+</body>
+</html>

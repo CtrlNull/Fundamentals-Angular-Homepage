@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>FAQ List</title>
+    <link href="bootstrap.min.css" rel="stylesheet" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style type="text/css">
+        a {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+
+    <nav class="navbar navbar-default navbar-inverse" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <!--CURRENT USer NAME LOCATION-->
+                <a class="navbar-brand" id="currentUser">CURRENT USER HURR</a>
+
+
+
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+
+
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a href="#" data-toggle="dropdown" class="dropdown-toggle">FAQs <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li id="myFaq"><a>Add FAQs</a></li>
+                        <li id="cuFaq"><a>FAQ Current User</a></li>
+
+                    </ul>
+
+                </li>
+            </ul>
+            <ul class="nav navbar-nav">
+                <li><a>My Quizzes</a></li>
+            </ul>
+
+
+
+            <form class="nav navbar-nav navbar-right" id="inputForm">
+                <div class="form-group">
+                    <input type="button" class="btn btn-default" id="btnLogOut" value="Logout">
+                </div>
+
+            </form>
+        </div><!-- /.navbar-collapse -->
+    </nav>
+
+
+
+<!--NAVBAR ENDS HERE!!!!!!!!!!!-->
+
+    <input type="button" class="pull-right btn btn-success" value="Create a new FAQ" id="createFaq"/>
+    <h2>Current User FAQ</h2>
+
+    <!--Drop Down Menu-->
+    <form id="inputForm">
+        <div class="dropdown">
+            <select class="btn btn-default dropdown-toggle form-control" type="button" data-toggle="dropdown" id="dropDownCategory" name="Drop Down">
+                <option selected="selected" value="">Select a Category</option>
+            </select>
+        </div>
+       </form>
+    <br/>
+
+    <div id="faqList">
+        <p class="p1">
+            <span class="s1"><strong>What's included?<br></strong></span>
+            Good question! Every theme ships with an example site, compiled CSS and JavaScript, new theme-specific components, a documentation page, a Gulpfile for compiling on your own, and the source Less/Sass and JavaScript files (Less for Bootstrap 3, Sass for Bootstrap 4 – both are included in the download).&nbsp;
+        </p>
+    </div>
+
+
+
+
+        <script src="../Scripts/jquery-3.1.1.min.js"></script>
+        <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
+        <script src="../Scripts/jquery.validate.min.js"></script>
+        <script src="../Scripts/bootstrap.min.js"></script>
+
+        <script type="text/javascript">
+            sabio.page.startUp = function () {
+                sabio.page.getCurrentUser();
+                sabio.page.getFAQ();
+                sabio.page.getCurrentUserFAQ();
+                $("body").on("click", "#dropDownCategory", sabio.page.handlers.dropDownCategory);
+                $("body").on("click", ".editFaq", sabio.page.handlers.editFaq);
+                $("#createFaq").on("click", sabio.page.handlers.createFaq);
+            }
+
+            sabio.page.handlers.createFaq = function () {
+                window.location.href = 'http://localhost:58300/Content/MyFAQ.html';
+            }
+
+            sabio.page.handlers.editFaq = function () {
+                var editId = $(this).closest(".faqTemplate").find(".faqId").text();
+                console.log(editId);
+                window.location.href = 'http://localhost:58300/Content/MyFAQ.html?id=' + editId;
+            };
+
+            sabio.page.handlers.dropDownCategory = function () {
+                var ddcValue = $("#dropDownCategory option:selected").html();
+                sabio.page.currentCategory = ddcValue;
+                sabio.page.writeToTemplate();
+            };
+
+            sabio.page.writeToTemplate = function () {
+                $("#faqList").empty();
+                var data = sabio.page.getCurrentUserFAQData;
+
+                var dataArray = [];
+                for (i = 0; i < data.items.length; i++){
+                    dataArray.push(data.items[i]);
+                };
+                
+                
+                dataArray.sort(function (a, b) {
+                    return a.displayOrder - b.displayOrder;
+                })
+
+
+                for (i = 0; i < dataArray.length; i++) {
+                    var j = i;
+                    while (dataArray[i].category == sabio.page.currentCategory){
+                        var template = sabio.page.loadTemplate();
+                        template.find('.s1 strong').text(dataArray[i].question);
+                        template.find('.faqAnswer').text(dataArray[i].answer);
+                        template.find('.faqId').text(dataArray[i].id);
+
+                        $("#faqList").append(template);
+
+                        break;
+                    }  
+                };
+            }
+
+            sabio.page.loadTemplate = function () {
+                var templateHtml = $('#template').html();
+                var vDomTemplate = $(templateHtml);
+                return vDomTemplate;
+            }; 
+
+            sabio.page.getCurrentUserFAQ = function () {
+                var onSuccess = function (data, status, xhr) {
+                    console.log(data);
+                    console.log(status);
+                    console.log(xhr);
+                    sabio.page.getCurrentUserFAQData = data;
+                }
+                var onError = function (xhr, errorText, error) {
+                    console.log(xhr);
+                    console.log(errorText);
+                    console.log(error);
+                }
+                var url = "https://pacoima-ypi.azurewebsites.net/api/faqs/user";
+                var settings = {
+                    cache: false
+                    , type: "GET"
+                    , contentType: "application/json"
+                    , success: onSuccess
+                    , error: onError
+                    ,
+                    xhrFields: {
+                        withCredentials: true
+                    }
+                };
+                $.ajax(url, settings);
+            }
+
+            //GET FAQ
+            sabio.page.getFAQ = function () {
+                var onSuccess = function (data, status, xhr) {
+                    console.log(data);
+                    console.log(status);
+                    console.log(xhr);
+                    for (var i = 0; i < data.items.length; i++) {
+                        var j = i + 1;
+                        var catItem = "<option value='" + j + "'>" + data.items[i].name + "</option>";
+                        $("#dropDownCategory").append(catItem);
+                    };
+                }
+                var onError = function (xhr, errorText, error) {
+                    console.log(xhr);
+                    console.log(errorText);
+                    console.log(error);
+                }
+                var url = "https://pacoima-ypi.azurewebsites.net/api/faqcategories";
+                var settings = {
+                    cache: false
+                    , type: "GET"
+                    , contentType: "application/json"
+                    , success: onSuccess
+                    , error: onError
+                    ,
+                    xhrFields: {
+                        withCredentials: true
+                    }
+                };
+                $.ajax(url, settings);
+            }
+
+            //GET CURRENT USER
+            sabio.page.getCurrentUser = function () {
+                var onSuccess = function (data, status, xhr) {
+                    console.log(data);
+                    console.log(status);
+                    console.log(xhr);
+                }
+                var onError = function (xhr, errorText, error) {
+                    console.log(xhr);
+                    console.log(errorText);
+                    console.log(error);
+                }
+                var url = "https://pacoima-ypi.azurewebsites.net/api/people/currentuser";
+                var settings = {
+                    cache: false
+                    , type: "GET"
+                    , contentType: "application/json"
+                    , success: onSuccess
+                    , error: onError
+                    ,
+                    xhrFields: {
+                        withCredentials: true
+                    }
+                };
+                $.ajax(url, settings);
+            }
+
+        </script>
+
+
+    <script type="text/html" id="template">
+        <div class="faqTemplate">
+            <input type="button" value="Edit" class="editFaq btn btn-warning pull-right" />
+            <p>
+                <span class="s1"><strong>What's included?<br></strong></span><br /><span class="faqAnswer">
+                    Good question! Every theme ships with an example site, compiled CSS and JavaScript, new theme-specific components, a documentation page, a Gulpfile for compiling on your own, and the source Less/Sass and JavaScript files (Less for Bootstrap 3, Sass for Bootstrap 4 – both are included in the download).
+                </span>&nbsp;
+            </p><span class="faqId hidden"></span>
+
+            <hr />
+        </div>
+    </script>
+</body>
+</html>
+

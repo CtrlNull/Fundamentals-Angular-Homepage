@@ -24,6 +24,7 @@
     <UseGlobalApplicationHostFile />
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <Use64BitIISExpress />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -95,7 +96,14 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\HomePage.html" />
+    <Content Include="Content\Index.html" />
     <Content Include="Content\json-formatter.css" />
+    <Content Include="Content\LoginForce.html" />
+    <Content Include="Content\MyFAQ.html" />
+    <Content Include="Content\MyFAQList.html" />
+    <Content Include="Content\QuizCreateAndEditPage.html" />
+    <Content Include="Content\QuizQuestionsCreateAndEdit.html" />
     <Content Include="Content\toastr.css" />
     <Content Include="Content\toastr.min.css" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />

@@ -1,0 +1,359 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>My FAQ</title>
+    <link href="bootstrap.min.css" rel="stylesheet" />
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <style type="text/css">
+        .qa {
+            margin-top: 40px;
+        }
+
+        a {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-default navbar-inverse" role="navigation">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+
+                <!--CURRENT USer NAME LOCATION-->
+                <a class="navbar-brand" id="currentUser">CURRENT USER HURR</a>
+
+
+
+            </div>
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+
+
+
+                <ul class="nav navbar-nav">
+                    <li id="myFaq"><a>My FAQs</a></li>
+                    <li><a>My Quizzes</a></li>
+                </ul>
+
+
+
+                <form class="nav navbar-nav navbar-right">
+                    <div class="form-group">
+                        <input type="button" class="btn btn-default" id="btnLogOut" value="Logout">
+                    </div>
+
+                </form>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+
+
+    <!--++++++++++++++++++++++++++++++++++++++++FAQ+++++++++++++++++++++++++++++++++++++-->
+    <div class="container">
+
+        <!--Drop Down Menu-->
+        <form id="inputForm">
+            <div class="dropdown">
+                <select class="btn btn-default dropdown-toggle form-control" type="button" data-toggle="dropdown" id="dropDownCategory" name="Drop Down">
+                    <option selected="selected" value="">Select a Category</option>
+                </select>
+            </div>
+
+
+            <!--Question & Answer-->
+            <div class="qa">
+                <input type="text" class="form-control" id="question" placeholder="New FAQ Questions" name="New Questions"/>
+                <textarea class="form-control" id="answer" placeholder="New FAQ Answers" rows="10" name="New Answers"></textarea>
+                <input type="button" class="form-control btn btn-default" id="btnSubmit" value="Submit" />
+            </div>
+        </form>
+    </div>
+
+
+    <!--SCRIPTS++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-->
+
+    <script src="../Scripts/jquery-3.1.1.min.js"></script>
+    <script src="http://sabioapi2.azurewebsites.net/scripts/sabio.js"></script>
+    <script src="../Scripts/jquery.validate.min.js"></script>
+    <script src="../Scripts/bootstrap.min.js"></script>
+
+    <script type="text/javascript">
+        sabio.page.activeButton = null;
+
+        sabio.page.startUp = function () {
+            sabio.page.getFAQ();
+            $("#btnSubmit").on("click", sabio.page.handlers.btnSubmit);
+
+            sabio.page.initializeValidationAuthor();
+
+            sabio.page.loadByQueryStringId();
+        };
+
+
+
+//Load by Query String
+        sabio.page.loadByQueryStringId = function () {
+            if (document.location.search.length) {
+                // query string exists
+                console.log("Query String Exists");
+                console.log(document.location.search);
+
+                var queryId = sabio.page.getUrlVars();
+                console.log("This is the queryId " + queryId.id);
+
+                sabio.page.getByQueryId(queryId.id);
+
+
+            } else {
+                console.log("No Query Exists");
+            }
+        }
+
+        sabio.page.getByQueryId = function (data) {
+            var onSuccess = function (data, status, xhr) {
+                console.log(data);
+                console.log(status);
+                console.log(xhr);
+
+                sabio.page.populateForm(data);
+            }
+            var onError = function (xhr, errorText, error) {
+                console.log(xhr);
+                console.log(errorText);
+                console.log(error);
+            }
+            var url = "https://pacoima-ypi.azurewebsites.net/api/faqs";
+            var settings = {
+                cache: false
+                , type: "GET"
+                , contentType: "application/json"
+                , success: onSuccess
+                , error: onError
+                ,
+                xhrFields: {
+                    withCredentials: true
+                }
+            };
+            console.log(data);
+            $.ajax(url + "/" + data, settings);
+        }
+
+        sabio.page.populateForm = function (data) {
+            $("#dropDownCategory").val(data.item.faqCategoryId).change();
+            $("#question").val(data.item.question);
+            $("#answer").val(data.item.answer);
+
+            sabio.page.editId = data.item.id;
+            console.log(sabio.page.editId);
+            sabio.page.activeButton = this;
+        }
+
+        sabio.page.getUrlVars = function() {
+            var vars = [], hash;
+            var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+            for (var i = 0; i < hashes.length; i++) {
+                hash = hashes[i].split('=');
+                vars.push(hash[0]);
+                vars[hash[0]] = hash[1];
+            }
+            return vars;
+        }
+
+//SUBMIT || EDIT Button
+        sabio.page.handlers.btnSubmit = function (evt) {
+            evt.preventDefault();
+
+            if ($("#inputForm").valid()) {
+                console.log("The Q&A is valid");
+
+                if (sabio.page.activeButton == null) {
+                    var data = sabio.page.readForm();
+                    sabio.page.postFAQ(data);
+                    $("#btnSubmit").val("Edit")
+                    sabio.page.activeButton = this;
+
+                    $("#question").val("Welcome to the Danger Zone");
+                }
+                else {
+                    //EDITing the FAQ entry
+                    console.log("Submit is EDIT");
+                    var editData = sabio.page.readForm();
+                    sabio.page.putFAQ(editData);
+                }
+            } else {
+                console.log("The Q&A has some problems Houston!");
+            }
+        }
+
+//PUT (EDIT)FAQ
+        sabio.page.putFAQ = function (data) {
+            var onSuccess = function (data, status, xhr) {
+                console.log(data);
+                console.log(status);
+                console.log(xhr);
+
+                $("#btnSubmit").val("Submit");
+                sabio.page.activeButton = null;
+                sabio.page.clearForm();
+            }
+            var onError = function (xhr, errorText, error) {
+                console.log(xhr);
+                console.log(errorText);
+                console.log(error);
+            }
+            var url = "https://pacoima-ypi.azurewebsites.net/api/faqs";
+            var settings = {
+                cache: false
+                , type: "PUT"
+                , contentType: "application/json"
+                , data: JSON.stringify(data)
+                , dataType: "json"
+                , success: onSuccess
+                , error: onError
+                ,
+                xhrFields: {
+                    withCredentials: true
+                }
+            };
+            $.ajax(url + "/" + sabio.page.editId, settings);
+        }
+
+        //POST FAQ
+        sabio.page.postFAQ = function (data) {
+            var onSuccess = function (data, status, xhr) {
+                console.log(data); //DATA FROM POST
+                console.log(status);
+                console.log(xhr);
+
+                sabio.page.editId = data.item;
+                console.log(sabio.page.editId);
+            }
+            var onError = function (xhr, errorText, error) {
+                console.log(xhr);
+                console.log(errorText);
+                console.log(error);
+            }
+            var url = "https://pacoima-ypi.azurewebsites.net/api/faqs";
+            var settings = {
+                cache: false
+                , type: "POST"
+                , contentType: "application/json"
+                , data: JSON.stringify(data)
+                , dataType: "json"
+                , success: onSuccess
+                , error: onError
+                ,
+                xhrFields: {
+                    withCredentials: true
+                }
+            };
+            $.ajax(url, settings);
+        }
+
+        //GET FAQ
+        sabio.page.getFAQ = function () {
+            var onSuccess = function (data, status, xhr) {
+                console.log(data);
+                console.log(status);
+                console.log(xhr);
+                for (var i = 0; i < data.items.length; i++) {
+                    var j = i + 1;
+                    var catItem = "<option value='" + j + "'>" + data.items[i].name + "</option>";
+
+                    console.log(j);
+                    console.log(catItem);
+
+                    $("#dropDownCategory").append(catItem);
+                };
+            }
+            var onError = function (xhr, errorText, error) {
+                console.log(xhr);
+                console.log(errorText);
+                console.log(error);
+            }
+            var url = "https://pacoima-ypi.azurewebsites.net/api/faqcategories";
+            var settings = {
+                cache: false
+                , type: "GET"
+                , contentType: "application/json"
+                , success: onSuccess
+                , error: onError
+                ,
+                xhrFields: {
+                    withCredentials: true   
+                }
+            };
+            $.ajax(url, settings);
+        }
+
+
+//read FORM 
+        sabio.page.readForm = function (itemId) {
+            var category = $("#dropDownCategory").val();
+            var question = $("#question").val();
+            var answer = $("#answer").val();
+
+            console.log("The category is number " + category);
+
+            var objData = {
+                faqCategoryId: category
+                , question: question
+                , answer: answer
+                , displayOrder: 1
+            }
+            if (sabio.page.activeButton != null) {
+                objData.id = sabio.page.editId;
+                console.log(objData.item);
+            }
+            console.log(objData);
+            return objData;
+
+        };
+
+
+        //jQuery VALIDATION
+        sabio.page.initializeValidationAuthor = function () {
+            jQuery.validator.setDefaults({
+                debug: true
+            });
+
+            var validationRules = {
+                "New Questions": {
+                    required: true
+                },
+                "New Answers": {
+                    required: true
+                },
+                "Drop Down": {
+                    required: true
+                }
+            }
+
+            var validationMessage = {
+                required: "This field is required"
+            }
+
+            var validationOptions = {
+                rules: validationRules
+                , message: validationMessage
+            }
+            $("#inputForm").validate(validationOptions);
+        };
+
+        sabio.page.clearForm = function () {
+            $("#inputForm")[0].reset();
+        }
+    </script>
+
+
+</body>
+</html>
