@@ -10,6 +10,12 @@
         a {
             cursor: pointer;
         }
+
+        .boxAnswer {
+            border: solid 1px;
+            padding: 5px 5px 5px 5px;
+            margin: 0px 0px 20px 0px;
+        }
     </style>
 </head>
 <body>
@@ -69,6 +75,11 @@
 
     <div class="container">
         <form id="quizForm">
+            <h4>Questions</h4>
+            <select class="form-control" id="quizId" >
+                <option value="new">Create A New Question</option>
+            </select>
+
 
             <h4>Quiz Name*</h4>
             <input type="text" id="quizName" class="form-control" placeholder="Quiz Name" value="This Wei's quiz name." name="Quiz Name" />
@@ -78,26 +89,42 @@
             <input type="text" id="quizQuestion" class="form-control" placeholder="Quiz Name" value="This Wei's quiz name." name="Quiz Name" />
             <hr />
 
-            <h4>Answer Type*</h4>
-            <select class="form-control" id="answerType" name="Default Answer Type">
-                <option value=""></option>
-                <option value="single">Single</option>
-                <option value="multiple">Multiple</option>
-                <option value="open">Open</option>
-            </select>
-            <hr />
 
-            <h4>Answers</h4>
-            <input type="text" id="answers" class="form-control" placeholder="Answers" value="This Wei's answer." name="Answers" />
-            <hr />
+            <!--BOX ANSWERS-->
+            <div class="boxAnswer">
+                <h4>Answer Type*</h4>
+                <select class="form-control" id="answerType" name="Default Answer Type">
+                    <option value=""></option>
+                    <option value="single">Single</option>
+                    <option value="multiple">Multiple</option>
+                    <option value="open">Open</option>
+                </select>
+                <hr />
 
-            <h4>Open Answers</h4>
-            <input type="text" id="openAnswers" class="form-control" placeholder="Open Answers" name="Open Answers" />
-            <hr />
+
+                <button id="addAdditionalAnswer" class="btn btn-default pull-right addAdditionalAnswer hidden" type="submit">
+                    <span class="glyphicon glyphicon-plus">
+                    </span>
+                    <span>Add Answers</span>
+                </button>
+
+                <h4>Answer</h4>
+                <input type="text" id="answers" class="answers form-control" placeholder="Answer" value="" name="Answers" />
+                <hr />
+
+
+                <h4>Open Answers</h4>
+                <input type="text" id="openAnswers" class="form-control" placeholder="Open Answers" name="Open Answers" />
+                <hr />
+
+            </div>
+
+
 
             <h4>Media</h4>
             <input type="text" id="media" class="form-control" placeholder="Media" value="This Wei's Media." name="Media" />
             <hr />
+
 
             <h4>Randomize Questions*</h4>
             <select class="form-control" id="randomizeQuestion" name="Randomize Question">
@@ -115,7 +142,7 @@
             </select>
             <hr />
 
-            <h4>Employer ID/Quiz ID*</h4>
+            <h4>Employer ID</h4>
             <input type="text" class="form-control" id="employerId" placeholder="Employer ID" name="Employer ID" />
             <hr />
 
@@ -131,42 +158,40 @@
             "randomizeQuestions": false,
             "randomizeAnswers": false}
                             -->
-
-
             <!--
-     
-                POST = 
-    {
-  "quizId": 1,
-  "question": "sample string 2",
-  "timer": 1,
-  "answerType": "sample string 3",
-  "answers": [
-    {
-      "answer": "sample string 1",
-      "isCorrect": true,
-      "sortOrder": 2
-    },
-    {
-      "answer": "sample string 1",
-      "isCorrect": true,
-      "sortOrder": 2
-    }
-  ],
-  "openAnswer": "sample string 4",
-  "media": "sample string 5",
-  "tags": [
-    {
-      "id": 1,
-      "name": "sample string 2"
-    },
-    {
-      "id": 1,
-      "name": "sample string 2"
-    }
-  ]
-}
-                -->
+
+                            POST =
+                {
+              "quizId": 1,
+              "question": "sample string 2",
+              "timer": 1,
+              "answerType": "sample string 3",
+              "answers": [
+                {
+                  "answer": "sample string 1",
+                  "isCorrect": true,
+                  "sortOrder": 2
+                },
+                {
+                  "answer": "sample string 1",
+                  "isCorrect": true,
+                  "sortOrder": 2
+                }
+              ],
+              "openAnswer": "sample string 4",
+              "media": "sample string 5",
+              "tags": [
+                {
+                  "id": 1,
+                  "name": "sample string 2"
+                },
+                {
+                  "id": 1,
+                  "name": "sample string 2"
+                }
+              ]
+            }
+                            -->
             <div class="col-sm-6">
                 <input type="button" value="Submit" id="btnSubmit" class="form-control btn btn-primary" />
             </div>
@@ -184,17 +209,56 @@
     <script src="../Scripts/bootstrap.min.js"></script>
 
     <script type="text/javascript">
-        sabio.page.activeItem = null;   
+        sabio.page.activeItem = null;
+        sabio.page.numForAnswer = null;
+
 
         sabio.page.startUp = function () {
             $("#openAnswers").prop('disabled', true);
+            $(".answers").prop('disabled', true);
             sabio.page.getCurrentUser();
             sabio.page.initializeValidationAuthor();
-          
+
             $("#btnSubmit").on("click", sabio.page.handlers.btnSubmit);
             $("#answerType").on("change", sabio.page.handlers.answerType);
+            $("body").on("click", "#addAdditionalAnswer", sabio.page.handlers.addAdditionalAnswer)
+            $("body").on("change", "#quizId", sabio.page.handlers.quizId);
         }
 
+
+
+        //Load Quiz onto Form
+        sabio.page.handlers.quizId = function () {
+            var data = sabio.page.quizInfo;
+            console.log(data);
+
+            var questionId = $("#quizId").val();
+
+            if (questionId == 'new'){
+                sabio.page.clearForm();
+            } else
+            {
+                for (var i = 0; i < data.item.questions.length; i++) {
+                    if (questionId == data.item.questions[i].id) {
+                        $("#quizQuestion").val(data.item.questions[i].question);
+
+
+                        $("#answerType").val(data.item.questions[i].answerType);
+                        $("#answers").val(data.item.questions[i].answers[0].answer);
+                        var answerType = $("#answerType").val()
+                        if (answerType == 'multiple') {
+
+                        };
+
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        };
+
+
+        //BTN SUBMIT
         sabio.page.handlers.btnSubmit = function (evt) {
             evt.preventDefault();
 
@@ -206,6 +270,8 @@
                 } else {
                     var data = sabio.page.readForm();
                     sabio.page.postQuiz(data);
+                    sabio.page.activeItem = this;
+                    $("#btnSubmit").val("Update");
                 }
 
             } else {
@@ -213,16 +279,118 @@
             }
         }
 
+
+
         sabio.page.handlers.answerType = function () {
             var answerType = $("#answerType").val();
-            if (answerType == 'open') {
-                $("#openAnswers").prop('disabled', false);
-            } else
-            {
+
+            if (answerType == "") {
+                $("#answers").prop('disabled', true);
                 $("#openAnswers").prop('disabled', true);
             }
+            if (answerType == 'single') {
+                $("#answers").prop('disabled', false);
+            }
+
+            if (answerType == "multiple") {
+                $(".addAdditionalAnswer").removeClass("hidden");
+                $("#answers").prop('disabled', false);
+            } else
+                $(".addAdditionalAnswer").addClass("hidden");
+
+            if (answerType == 'open') {
+                $("#openAnswers").prop('disabled', false);
+                $("#answers").prop('disabled', true);
+            } else {
+                $("#openAnswers").prop('disabled', true);
+            }
+
         }
 
+
+
+        sabio.page.handlers.addAdditionalAnswer = function (evt) {
+            evt.preventDefault();
+            var template = sabio.page.loadTemplate();
+            if (sabio.page.numForAnswer == null) {
+                sabio.page.numForAnswer = 0;
+            };
+            var answerNum = sabio.page.numForAnswer + 2;
+            var newText = "Answer " + answerNum;
+
+            template.find(".h4Answers").text(newText);
+            template.find('input[type=text]').attr("placeholder", newText);
+
+            //id starts at 'answer0''
+            template.find('input[type=text]').attr("id", "answer" + sabio.page.numForAnswer);
+
+            if (sabio.page.numForAnswer == 0) {
+                $("#answers").after(template);
+            } else {
+                var currentAnswer = "#answer" + (sabio.page.numForAnswer - 1);
+                $(currentAnswer).after(template);
+
+                console.log(currentAnswer);
+            }
+            sabio.page.numForAnswer += 1;
+        }
+
+
+
+
+        sabio.page.loadTemplate = function () {
+            var templateHtml = $('#answerTemplate').html();
+            var vDomTemplate = $(templateHtml);
+            return vDomTemplate;
+        }
+
+
+
+
+        //////////----------{Answers}----------\\\\\\\\\\\
+        sabio.page.readAnswers = function () {
+            var answers = [];
+            var answerSingle = $("#answers").val();
+            var answerType = $("#answerType").val();
+            var sortOrder = 1;
+            if (answerType == "single" || answerType == "multiple") {
+                var answerObj = {
+                    answer: answerSingle,
+                    isCorrect: true,
+                    sortOrder: sortOrder
+                }
+                answers.push(answerObj);
+                console.log(answerObj);
+
+                if (answerType == "multiple") {
+                    console.log("Multiple reached");
+                    var answerNum = (sabio.page.numForAnswer);
+                    console.log(answerNum);
+
+                    for (var i = 0; i < answerNum; i++) {
+
+                        var answerSel = "#answer" + [i];
+                        console.log(answerSel);
+
+                        answerMultiple = $(answerSel).val();
+                        console.log(answerMultiple);
+
+                        var answerObj = {
+                            answer: answerMultiple,
+                            isCorrect: true,
+                            sortOrder: sortOrder
+                        }
+                        answers.push(answerObj);
+                        sortOrder++;
+                    }
+                }
+                console.log(answers);
+            }
+            return answers;
+        }
+
+
+        /////----------{ReadFORM}----------\\\\\\
         sabio.page.readForm = function () {
             var quizName = $("#quizName").val();
             var answerType = $("#answerType").val();
@@ -231,54 +399,84 @@
             var id = $("#employerId").val();
 
             var quizQuestion = $("#quizQuestion").val();
-            var answers = $("#answers").val();
+
             var openAnswers = $("#openAnswers").val();
+
             var media = $("#media").val();
+            if (media == "") {
+                media = null;
+            };
+
             var quizId = $("#employerId").val();
 
-            if (sabio.page.activeItem != null) {
-                var objData = {
-                    id: id,
-                    quizName: quizName,
-                    answerType: answerType,
-                    randomizeQuestions: randomizeQuestion,
-                    randomizeAnswers: randomizeAnswer
-                };
-                console.log(objData);
-                return objData
+            var answers = sabio.page.readAnswers();
 
-            } else
-                if (sabio.page.activeItem == null) {
-                    var objData = {
-                        quizId: quizId,
-                            question: quizQuestion,
-                                timer: 1,
-                                    answerType: answerType,
-                                        answers: [
-                                            {
-                                                answer: answers,
-                                                isCorrect: true,
-                                                sortOrder: 2
-                                            },
-                                        ],
-                                            openAnswer: openAnswers,
-                                                media: media,
-                        //tags: [
-                        //    {
-                        //        id: 1,
-                        //        name: "sample string 2"
-                        //    },
-                        //    {
-                        //        id: 1,
-                        //        name: "sample string 2"
-                        //    }
-                        //]
+            var objData = {
+                quizId: quizId,
+                question: quizQuestion,
+                timer: 1,
+                answerType: answerType,
+                answers: answers,
+                openAnswer: openAnswers,
+                media: media,
+                tags: [
+                    {
+                        id: 1,
+                        name: "sample string 2"
+                    },
+                    {
+                        id: 1,
+                        name: "sample string 2"
                     }
-                }
+                ]
+            }
             console.log(objData);
             return objData;
-
         };
+
+
+
+
+//LOADING THE QUIZZES
+        sabio.page.loadToQuizzes = function (data) {
+            for (var i = 0; i < data.item.questions.length; i++) {
+                var quizOption = "<option value='" + data.item.questions[i].id + "'>Q." + data.item.questions[i].id + "-    " + data.item.questions[i].question + "</option>";
+                $("#quizId").append(quizOption);
+            }
+        };
+
+
+
+//GET QUIZZ
+        sabio.page.getQuiz = function (id) {
+            var onSuccess = function (data, status, xhr) {
+                console.log(data);
+                console.log(status);
+                console.log(xhr);
+                sabio.page.loadToQuizzes(data);
+
+                sabio.page.quizInfo = data;
+                console.log(sabio.page.quizInfo);
+            }
+            var onError = function (xhr, errorText, error) {
+                console.log(xhr);
+                console.log(errorText);
+                console.log(error);
+            }
+            var url = "https://pacoima-ypi.azurewebsites.net/api/quizzes";
+            var settings = {
+                cache: false
+                , type: "GET"
+                , contentType: "application/json"
+                , success: onSuccess
+                , error: onError
+                ,
+                xhrFields: {
+                    withCredentials: true
+                }
+            };
+            $.ajax(url + "/" + id, settings);
+        }
 
         sabio.page.postQuiz = function (data) {
             var onSuccess = function (data, status, xhr) {
@@ -312,7 +510,7 @@
 
 
         //PUT ---- QUIZ
-        sabio.page.putQuiz = function (data) {
+        sabio.page.putQuiz = function (id) {
             var onSuccess = function (data, status, xhr) {
                 console.log(data);
                 console.log(status);
@@ -338,7 +536,8 @@
                     withCredentials: true
                 }
             };
-            $.ajax(url + "/" + data.id, settings);
+            console.log(id);
+            $.ajax(url + "/" + id, settings);
         }
 
 
@@ -351,6 +550,7 @@
 
                 console.log(data.item.id);
                 $("#employerId").val(data.item.id);
+                sabio.page.getQuiz(data.item.id);
             }
             var onError = function (xhr, errorText, error) {
                 console.log(xhr);
@@ -397,6 +597,9 @@
                 "Quiz Name": {
                     required: true
                     , minlength: 5
+                },
+                "Answers": {
+                    required: true
                 }
             }
 
@@ -416,6 +619,17 @@
             $("#quizForm").validate(validationOptions);
         }
 
+        sabio.page.clearForm = function () {
+            $("#quizForm")[0].reset();
+        };
+    </script>
+
+
+    <script type="text/html" id="answerTemplate">
+        <div class="templateDiv">
+            <h4><span class="h4Answers">Answers</span></h4>
+            <input type="text" id="answers" class="tempAnswers form-control" value="" name="Answers" />
+        </div>
     </script>
 
 </body>
