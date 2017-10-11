@@ -2,29 +2,32 @@
     angular.module("FormList")
         .controller("MyController", MyController);
 
-    MyController.$inject = ["CallService", "$q"]; // Calls call-service.js
+    MyController.$inject = ["CallService", "$q", "$scope"]; // Calls call-service.js
 
-    function MyController(CallService, $q) {
+    function MyController(CallService, $q, $scope) {
         var vm = this;
+        vm.clicky = _clicky;
+        vm.item = null;
         vm.CallService = CallService;
-
-        vm.$onInit = _init;
-
-        function _init() {
-            vm.CallService.getAll(data)
-                .then(_getAllSuccess, _getAllError);
-            function _getAllSuccess(response) {
-                console.log("successfull");
-                // unwrap the data from the response
-                //return response.data;
-            }
-            // ---- [ Error ] ---- //
-            function _getAllError(error) {
-                return $q.reject(error);
+        
+        /// ====== Post Data ====== //
+        /// == (Post Success) == ///
+        function _postSuccess(data) {
+            if (data && data.item) {
+                // To update UI, get id form data
+                vm.item.id = data.item;
+                vm.items.push(vm.item);
             }
         }
-
+        // == [ Error ] == //
+        function _postError(error) {
+            console.log("Error");
+        }
+        // == [clicky to post] == //
+        function _clicky() {
+            CallService.post(vm.item)
+                .then(_postSuccess, _postError);
+        }
+        /// ====== Post END ====== ///
     }
-
-
 })();

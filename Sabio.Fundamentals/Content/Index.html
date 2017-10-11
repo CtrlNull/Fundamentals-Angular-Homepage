@@ -20,49 +20,54 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.5/angular.js"></script>
 
     <div class="container">
-        <form id="inputForm">
+        <form id="inputForm" name="FormList">
             <h1>Registration Form</h1>
             <fieldset>
                 <div ng-controller="MyController as c">
                 <div class="form-group">
                     <label class="control-label">First Name</label>
                     <div class="controls">
-                        <input type="text" placeholder="First Name" id="firstName"  class="form-control" name="FirstName" ng-model="c.item.inputfName"/><!-- First Name Input-->
+                        <input type="text" placeholder="First Name" id="firstName"  class="form-control" name="FirstName" ng-model="c.item.FirstName"/><!-- First Name Input-->
                     </div>
                     </div>
                 <div class="form-group">
                     <label class="control-label">Last Name</label>
                     <div class="controls">
-                        <input type="text"  placeholder="Last Name" id="lastName" class="form-control" name="LastName"  ng-model="c.item.inputlName" /><!-- Last Name Input-->
+                        <input type="text"  placeholder="Last Name" id="lastName" class="form-control" name="LastName"  ng-model="c.item.LastName" /><!-- Last Name Input-->
                     </div>
                     </div>
                 <div class="form-group">
                     <label class="control-label">Password</label>
                     <div class="controls">
                         <!-- Password One-->
-                        <input type="password" id="password" class="form-control" name="passOne" ng-model="c.passOne" min="6" required/>
+                        <input type="password" id="password" class="form-control" name="passOne" ng-model="c.passOne" ng-minlength="6" required/>
                     </div>
                     <div role="alert">
                         <!-- Error -->
-                        <span class="error" ng-show="FormList.passOne.$error.required">Six characters minimum required</span>
+                        <span class="error" ng-show="FormList.passOne.$error.minlength">Six characters minimum required</span>
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="control-label">Confirm Password</label>
                     <div class="controls">
                         <!-- Password Two-->
-                        <input type="password" id="confirmPassword" class="form-control" name="passTwo" ng-model="c.item.passTwo" min="6" required/>
+                        <input type="password" id="confirmPassword" class="form-control" name="passTwo" ng-model="c.item.Password" ng-minlength="6" ng-pattern="\b{{c.passOne}}\b" required/>
                     </div>
                     <div role="alert">
                         <!-- Error -->
-                        <span class="error" ng-show="FormList.passTwo.$error.required">Six characters minimum required</span>
+                        <span class="error" ng-show="FormList.passTwo.$error.minlength">Six characters minimum required</span>
                     </div>
+                    <div role="alert">
+                        <!-- Error -->
+                        <span class="error" ng-show="FormList.passTwo.$error.pattern">Password does not match</span>
+                    </div>
+
                 </div>
                 <div class="form-group">
                     <label class="control-label">Email</label>
                     <div class="controls">
                         <!-- Email Input-->
-                        <input type="email" id="email" placeholder="Email" class="form-control" name="Email" ng-model="c.item.email"/>
+                        <input type="email" id="email" placeholder="Email" class="form-control" name="Email" ng-model="c.item.Email"/>
                     </div>
                 </div>
                     <!-- Button -->
